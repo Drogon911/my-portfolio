@@ -49,10 +49,10 @@ export default function Home() {
       <div className="relative w-full max-w-md flex items-center justify-center">
         <button
           onClick={prevAlbum}
-          className="absolute left-0 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-pink-500/80 backdrop-blur-sm text-white text-2xl font-bold active:bg-pink-700 transition-all duration-200 shadow-lg"
+          className="absolute left-0 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-white/20 backdrop-blur-md text-pink-600 hover:bg-pink-600 hover:text-white active:bg-pink-700 transition-all duration-200 shadow-lg border border-white/30"
           aria-label="Предыдущий альбом"
         >
-          ◀
+          <ChevronLeft className="w-6 h-6" />
         </button>
 
         <Link href={`/player/${currentAlbum.id}`}>
@@ -98,10 +98,10 @@ export default function Home() {
 
         <button
           onClick={nextAlbum}
-          className="absolute right-0 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-pink-500/80 backdrop-blur-sm text-white text-2xl font-bold active:bg-pink-700 transition-all duration-200 shadow-lg"
+          className="absolute right-0 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-white/20 backdrop-blur-md text-pink-600 hover:bg-pink-600 hover:text-white active:bg-pink-700 transition-all duration-200 shadow-lg border border-white/30"
           aria-label="Следующий альбом"
         >
-          ▶
+          <ChevronRight className="w-6 h-6" />
         </button>
       </div>
 
