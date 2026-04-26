@@ -1,65 +1,114 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
+
+const albums = [
+  {
+    id: 1,
+    name: "EP 2010",
+    artist: "Eskimo Callboy",
+    cover: "/eskimo-callboy-ep-2010.jpg",
+    accentColor: "from-pink-400 to-rose-500",
+  },
+  {
+    id: 2,
+    name: "Vegas",
+    artist: "Eskimo Callboy",
+    cover: "/vegas-cover.jpg",
+    accentColor: "from-purple-500 to-indigo-600",
+  },
+  // сюда добавишь другие альбомы позже
+];
 
 export default function Home() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const nextAlbum = () => {
+    setCurrentIndex((prev) => (prev + 1) % albums.length);
+  };
+
+  const prevAlbum = () => {
+    setCurrentIndex((prev) => (prev - 1 + albums.length) % albums.length);
+  };
+
+  const currentAlbum = albums[currentIndex];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="min-h-screen bg-gradient-to-br from-rose-100 via-pink-50 to-violet-100 flex flex-col items-center justify-center p-6">
+      <h1 className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-violet-600 mb-2 text-center">
+        Вечеринка уже идёт!!!
+      </h1>
+      <p className="text-gray-500 mb-12 text-center">
+        Листай пластинки → нажимай на обложку
+      </p>
+
+      <div className="relative w-full max-w-md flex items-center justify-center">
+        <button
+          onClick={prevAlbum}
+          className="absolute left-0 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-pink-300/40 backdrop-blur-md text-white text-xl hover:bg-pink-500/70 hover:scale-110 transition-all duration-200 shadow-md"
+        >
+          ◀
+        </button>
+
+        <Link href={`/player?id=${currentAlbum.id}`}>
+          <motion.div
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            onDragEnd={(event, info) => {
+              if (info.offset.x < -50) nextAlbum();
+              if (info.offset.x > 50) prevAlbum();
+            }}
+            className="cursor-grab active:cursor-grabbing"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+            <motion.div
+              key={currentIndex}
+              initial={{ opacity: 0, rotateY: -30, scale: 0.8 }}
+              animate={{ opacity: 1, rotateY: 0, scale: 1 }}
+              exit={{ opacity: 0, rotateY: 30, scale: 0.8 }}
+              transition={{ duration: 0.4, type: "spring", stiffness: 200 }}
+              className="cursor-pointer group"
+            >
+              <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 group-hover:scale-105">
+                <Image
+                  src={currentAlbum.cover}
+                  alt={currentAlbum.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  priority
+                />
+              </div>
+              <h2 className="text-2xl font-bold text-center mt-4 bg-gradient-to-r bg-clip-text text-transparent from-pink-600 to-rose-600">
+                {currentAlbum.name}
+              </h2>
+              <p className="text-gray-600 text-center">{currentAlbum.artist}</p>
+            </motion.div>
+          </motion.div>
+        </Link>
+
+        <button
+          onClick={nextAlbum}
+          className="absolute right-0 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-pink-300/40 backdrop-blur-md text-white text-xl hover:bg-pink-500/70 hover:scale-110 transition-all duration-200 shadow-md"
+        >
+          ▶
+        </button>
+      </div>
+
+      <div className="flex gap-3 mt-10">
+        {albums.map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => setCurrentIndex(idx)}
+            className={`h-2 rounded-full transition-all duration-300 ${
+              idx === currentIndex ? "w-6 bg-pink-600" : "w-2 bg-gray-400"
+            }`}
+          />
+        ))}
+      </div>
     </div>
   );
 }
