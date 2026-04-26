@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const albums = [
   {
@@ -53,7 +53,7 @@ export default function Home() {
           ◀
         </button>
 
-        <Link href={`/player?id=${currentAlbum.id}`}>
+        <Link href={`/player/${currentAlbum.id}`}>
           <motion.div
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
@@ -64,29 +64,31 @@ export default function Home() {
             }}
             className="cursor-grab active:cursor-grabbing"
           >
-            <motion.div
-              key={currentIndex}
-              initial={{ opacity: 0, rotateY: -30, scale: 0.8 }}
-              animate={{ opacity: 1, rotateY: 0, scale: 1 }}
-              exit={{ opacity: 0, rotateY: 30, scale: 0.8 }}
-              transition={{ duration: 0.4, type: "spring", stiffness: 200 }}
-              className="cursor-pointer group"
-            >
-              <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 group-hover:scale-105">
-                <Image
-                  src={currentAlbum.cover}
-                  alt={currentAlbum.name}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  priority
-                />
-              </div>
-              <h2 className="text-2xl font-bold text-center mt-4 bg-gradient-to-r bg-clip-text text-transparent from-pink-600 to-rose-600">
-                {currentAlbum.name}
-              </h2>
-              <p className="text-gray-600 text-center">{currentAlbum.artist}</p>
-            </motion.div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentIndex}
+                initial={{ opacity: 0, rotateY: -30, scale: 0.8 }}
+                animate={{ opacity: 1, rotateY: 0, scale: 1 }}
+                exit={{ opacity: 0, rotateY: 30, scale: 0.8 }}
+                transition={{ duration: 0.4, type: "spring", stiffness: 200 }}
+                className="cursor-pointer group"
+              >
+                <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 group-hover:scale-105">
+                  <Image
+                    src={currentAlbum.cover}
+                    alt={currentAlbum.name}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    priority
+                  />
+                </div>
+                <h2 className="text-2xl font-bold text-center mt-4 bg-gradient-to-r bg-clip-text text-transparent from-pink-600 to-rose-600">
+                  {currentAlbum.name}
+                </h2>
+                <p className="text-gray-600 text-center">{currentAlbum.artist}</p>
+              </motion.div>
+            </AnimatePresence>
           </motion.div>
         </Link>
 

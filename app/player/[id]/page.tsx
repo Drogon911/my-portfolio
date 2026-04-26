@@ -4,9 +4,8 @@ import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { useSearchParams } from "next/navigation";
+import * as React from "react"; // 👈 НОВЫЙ ИМПОРТ
 
-// ⬇️ ВСЕ АЛЬБОМЫ ЗДЕСЬ ⬇️
 const albums = [
   {
     id: 1,
@@ -15,24 +14,9 @@ const albums = [
     cover: "/eskimo-callboy-ep-2010.jpg",
     tracks: [
       { id: 1, title: "Intro", src: "/track1.mp3", cover: "/cover1a.jpg" },
-      {
-        id: 2,
-        title: "Antichrist Sex Pornstyle",
-        src: "/track2.mp3",
-        cover: "/cover2a.jpg",
-      },
-      {
-        id: 3,
-        title: "Monsieur Moustache vs. Clitcat",
-        src: "/track3.mp3",
-        cover: "/cover3.jpg",
-      },
-      {
-        id: 4,
-        title: "Hey Mrs. Dramaqueen",
-        src: "/track4.mp3",
-        cover: "/cover4.jpg",
-      },
+      { id: 2, title: "Antichrist Sex Pornstyle", src: "/track2.mp3", cover: "/cover2a.jpg" },
+      { id: 3, title: "Monsieur Moustache vs. Clitcat", src: "/track3.mp3", cover: "/cover3.jpg" },
+      { id: 4, title: "Hey Mrs. Dramaqueen", src: "/track4.mp3", cover: "/cover4.jpg" },
       { id: 5, title: "Prom Night", src: "/track5.mp3", cover: "/cover5.jpg" },
       { id: 6, title: "Outro", src: "/track6.mp3", cover: "/cover6.jpg" },
     ],
@@ -43,74 +27,25 @@ const albums = [
     artist: "Eskimo Callboy",
     cover: "/vegas-cover.jpg",
     tracks: [
-      {
-        id: 1,
-        title: "Bury Me in Vegas",
-        src: "/track1v.mp3",
-        cover: "/cover1v.jpg",
-      },
-      {
-        id: 2,
-        title: "The Kerosene Dance",
-        src: "/track2v.mp3",
-        cover: "/cover2v.jpg",
-      },
+      { id: 1, title: "Bury Me in Vegas", src: "/track1v.mp3", cover: "/cover1v.jpg" },
+      { id: 2, title: "The Kerosene Dance", src: "/track2v.mp3", cover: "/cover2v.jpg" },
       { id: 3, title: "Internude", src: "/track3v.mp3", cover: "/cover3v.jpg" },
-      {
-        id: 4,
-        title: "Is Anyone Up",
-        src: "/track4v.mp3",
-        cover: "/cover4v.jpg",
-      },
-      {
-        id: 5,
-        title: "Wonderbra Boulevard",
-        src: "/track5v.mp3",
-        cover: "/cover5v.jpg",
-      },
-      {
-        id: 6,
-        title: "Legendary Sleeping Assault",
-        src: "/track6v.mp3",
-        cover: "/cover6v.jpg",
-      },
-      {
-        id: 7,
-        title: "Light the Skyline",
-        src: "/track7v.mp3",
-        cover: "/cover7v.jpg",
-      },
-      {
-        id: 8,
-        title: "5$ Bitchcore",
-        src: "/track8v.mp3",
-        cover: "/cover8v.jpg",
-      },
-      {
-        id: 9,
-        title: "Transilvanian Cunthunger",
-        src: "/track9v.mp3",
-        cover: "/cover9v.jpg",
-      },
-      {
-        id: 10,
-        title: "Muffin Purper-Gurk",
-        src: "/track10v.mp3",
-        cover: "/cover10v.jpg",
-      },
-      {
-        id: 11,
-        title: "Snow Covered Polaroids",
-        src: "/track11v.mp3",
-        cover: "/cover11v.jpg",
-      },
+      { id: 4, title: "Is Anyone Up", src: "/track4v.mp3", cover: "/cover4v.jpg" },
+      { id: 5, title: "Wonderbra Boulevard", src: "/track5v.mp3", cover: "/cover5v.jpg" },
+      { id: 6, title: "Legendary Sleeping Assault", src: "/track6v.mp3", cover: "/cover6v.jpg" },
+      { id: 7, title: "Light the Skyline", src: "/track7v.mp3", cover: "/cover7v.jpg" },
+      { id: 8, title: "5$ Bitchcore", src: "/track8v.mp3", cover: "/cover8v.jpg" },
+      { id: 9, title: "Transilvanian Cunthunger", src: "/track9v.mp3", cover: "/cover9v.jpg" },
+      { id: 10, title: "Muffin Purper-Gurk", src: "/track10v.mp3", cover: "/cover10v.jpg" },
+      { id: 11, title: "Snow Covered Polaroids", src: "/track11v.mp3", cover: "/cover11v.jpg" },
     ],
   },
 ];
 
-export default function PlayerPage() {
-  const searchParams = useSearchParams();
-  const albumId = searchParams.get("id");
+export default function PlayerPage({ params }: { params: Promise<{ id: string }> }) {
+  // КОРРЕКТНО: unwrap Promise с помощью React.use()
+  const { id } = React.use(params);
+  const albumId = id;
   const album = albums.find((a) => a.id === Number(albumId)) || albums[0];
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -184,7 +119,6 @@ export default function PlayerPage() {
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
-      {/* Кнопка назад */}
       <div className="absolute top-4 left-4 z-50">
         <Link
           href="/"
@@ -194,12 +128,10 @@ export default function PlayerPage() {
         </Link>
       </div>
 
-      {/* Фон с анимацией */}
       <div
         className="absolute inset-0 transition-opacity duration-1000"
         style={{
-          background:
-            "linear-gradient(135deg, #fbcfe8, #db2777, #fbcfe8, #db2777, #fbcfe8)",
+          background: "linear-gradient(135deg, #fbcfe8, #db2777, #fbcfe8, #db2777, #fbcfe8)",
           backgroundSize: "400% 400%",
           animation: isPlaying ? "gradientFlow 12s ease infinite" : "none",
         }}
@@ -265,24 +197,11 @@ export default function PlayerPage() {
           </div>
 
           <div className="flex gap-8 justify-center items-center mt-6">
-            <button
-              onClick={prevTrack}
-              className="p-3 rounded-full bg-white/30 hover:bg-white/50 transition text-white text-2xl"
-            >
-              ⏮
-            </button>
-            <button
-              onClick={togglePlay}
-              className="p-5 rounded-full bg-white hover:bg-pink-50 transition shadow-lg text-pink-600 text-3xl"
-            >
+            <button onClick={prevTrack} className="p-3 rounded-full bg-white/30 hover:bg-white/50 transition text-white text-2xl">⏮</button>
+            <button onClick={togglePlay} className="p-5 rounded-full bg-white hover:bg-pink-50 transition shadow-lg text-pink-600 text-3xl">
               {isPlaying ? "⏸" : "▶"}
             </button>
-            <button
-              onClick={nextTrack}
-              className="p-3 rounded-full bg-white/30 hover:bg-white/50 transition text-white text-2xl"
-            >
-              ⏭
-            </button>
+            <button onClick={nextTrack} className="p-3 rounded-full bg-white/30 hover:bg-white/50 transition text-white text-2xl">⏭</button>
           </div>
 
           <audio
@@ -297,21 +216,11 @@ export default function PlayerPage() {
 
       <style jsx>{`
         @keyframes gradientFlow {
-          0% {
-            background-position: 0% 0%;
-          }
-          25% {
-            background-position: 100% 0%;
-          }
-          50% {
-            background-position: 100% 100%;
-          }
-          75% {
-            background-position: 0% 100%;
-          }
-          100% {
-            background-position: 0% 0%;
-          }
+          0% { background-position: 0% 0%; }
+          25% { background-position: 100% 0%; }
+          50% { background-position: 100% 100%; }
+          75% { background-position: 0% 100%; }
+          100% { background-position: 0% 0%; }
         }
       `}</style>
     </div>
