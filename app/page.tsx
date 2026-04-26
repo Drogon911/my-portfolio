@@ -48,7 +48,7 @@ export default function Home() {
       <div className="relative w-full max-w-md flex items-center justify-center">
         <button
           onClick={prevAlbum}
-          className="absolute left-0 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-pink-300/40 backdrop-blur-md text-white text-xl hover:bg-pink-500/70 hover:scale-110 transition-all duration-200 shadow-md"
+          className="absolute left-0 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-pink-300/40 backdrop-blur-md text-white text-xl active:bg-pink-500/70 transition-all duration-200 shadow-md"
         >
           ◀
         </button>
@@ -86,7 +86,9 @@ export default function Home() {
                 <h2 className="text-2xl font-bold text-center mt-4 bg-gradient-to-r bg-clip-text text-transparent from-pink-600 to-rose-600">
                   {currentAlbum.name}
                 </h2>
-                <p className="text-gray-600 text-center">{currentAlbum.artist}</p>
+                <p className="text-gray-600 text-center">
+                  {currentAlbum.artist}
+                </p>
               </motion.div>
             </AnimatePresence>
           </motion.div>
@@ -94,7 +96,7 @@ export default function Home() {
 
         <button
           onClick={nextAlbum}
-          className="absolute right-0 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-pink-300/40 backdrop-blur-md text-white text-xl hover:bg-pink-500/70 hover:scale-110 transition-all duration-200 shadow-md"
+          className="absolute right-0 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-pink-300/40 backdrop-blur-md text-white text-xl active:bg-pink-500/70 transition-all duration-200 shadow-md"
         >
           ▶
         </button>
