@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Вечеринка уже идёт!!!",
-    description: "Слушай Eskimo Callboy в уникальном плеере с анимациями.",
+    description: "Слушай Eskimo Callboy в уникальном плеере.",
   },
 };
 
