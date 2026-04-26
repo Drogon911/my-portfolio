@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const albums = [
   {
@@ -48,7 +49,8 @@ export default function Home() {
       <div className="relative w-full max-w-md flex items-center justify-center">
         <button
           onClick={prevAlbum}
-          className="absolute left-0 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-pink-300/40 backdrop-blur-md text-white text-xl active:bg-pink-500/70 transition-all duration-200 shadow-md"
+          className="absolute left-0 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-pink-500/80 backdrop-blur-sm text-white text-2xl font-bold active:bg-pink-700 transition-all duration-200 shadow-lg"
+          aria-label="Предыдущий альбом"
         >
           ◀
         </button>
@@ -96,7 +98,8 @@ export default function Home() {
 
         <button
           onClick={nextAlbum}
-          className="absolute right-0 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-pink-300/40 backdrop-blur-md text-white text-xl active:bg-pink-500/70 transition-all duration-200 shadow-md"
+          className="absolute right-0 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-pink-500/80 backdrop-blur-sm text-white text-2xl font-bold active:bg-pink-700 transition-all duration-200 shadow-lg"
+          aria-label="Следующий альбом"
         >
           ▶
         </button>
