@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import * as React from "react";
 import { SkipBack, Play, Pause, SkipForward } from "lucide-react";
+import { useIsMobile } from "@/app/hooks/useIsMobile";
 
 const albums = [
   {
@@ -122,6 +123,7 @@ export default function PlayerPage({
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
+  const isMobile = useIsMobile();
 
   const currentTrack = album.tracks[currentTrackIndex];
 
@@ -211,23 +213,58 @@ export default function PlayerPage({
       <div className="relative z-10 flex-1 flex flex-col">
         <div className="flex-1 flex flex-col items-center justify-center p-6">
           <AnimatePresence mode="wait">
-            <motion.div
-              key={currentTrackIndex}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.2 }}
-              className="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl shadow-2xl overflow-hidden bg-white/10 backdrop-blur-sm"
-            >
-              <Image
-                src={currentTrack.cover}
-                alt={currentTrack.title}
-                fill
-                sizes="(max-width: 768px) 100vw, 33vw"
-                className="object-cover"
-                priority
-              />
-            </motion.div>
+            {isMobile ? (
+              <motion.div
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2}
+                onDragEnd={(event, info) => {
+                  if (info.offset.x < -50) nextTrack();
+                  if (info.offset.x > 50) prevTrack();
+                }}
+                className="cursor-grab active:cursor-grabbing"
+              >
+                <motion.div
+                  key={currentTrackIndex}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.2 }}
+                  className="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl shadow-2xl overflow-hidden bg-white/10 backdrop-blur-sm"
+                >
+                  <Image
+                    src={currentTrack.cover}
+                    alt={currentTrack.title}
+                    fill
+                    className="object-cover pointer-events-none select-none"
+                    draggable={false}
+                    onContextMenu={(e) => e.preventDefault()}
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    priority
+                  />
+                </motion.div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key={currentTrackIndex}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+                className="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl shadow-2xl overflow-hidden bg-white/10 backdrop-blur-sm"
+              >
+                <Image
+                  src={currentTrack.cover}
+                  alt={currentTrack.title}
+                  fill
+                  className="object-cover pointer-events-none select-none"
+                  draggable={false}
+                  onContextMenu={(e) => e.preventDefault()}
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  priority
+                />
+              </motion.div>
+            )}
           </AnimatePresence>
 
           <AnimatePresence mode="wait">
