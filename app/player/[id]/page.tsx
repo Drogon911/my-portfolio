@@ -222,7 +222,7 @@ export default function PlayerPage({
                   if (info.offset.x < -50) nextTrack();
                   if (info.offset.x > 50) prevTrack();
                 }}
-                className="cursor-grab active:cursor-grabbing"
+                className="cursor-grab active:cursor-grabbing will-change-transform"
               >
                 <motion.div
                   key={currentTrackIndex}
@@ -230,7 +230,7 @@ export default function PlayerPage({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.2 }}
-                  className="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl shadow-2xl overflow-hidden bg-white/10 backdrop-blur-sm"
+                  className="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl shadow-2xl overflow-hidden bg-white/10 backdrop-blur-sm will-change-transform"
                 >
                   <Image
                     src={currentTrack.cover}
@@ -251,7 +251,7 @@ export default function PlayerPage({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.2 }}
-                className="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl shadow-2xl overflow-hidden bg-white/10 backdrop-blur-sm"
+                className="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl shadow-2xl overflow-hidden bg-white/10 backdrop-blur-sm will-change-transform"
               >
                 <Image
                   src={currentTrack.cover}

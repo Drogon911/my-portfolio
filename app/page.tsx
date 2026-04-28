@@ -71,69 +71,69 @@ export default function Home() {
         </button>
 
         <AnimatePresence mode="wait" custom={direction}>
-  <motion.div
-    key={currentIndex}
-    custom={direction}
-    initial="initial"
-    animate="animate"
-    exit="exit"
-    variants={{
-      initial: (dir) => ({
-        opacity: 0,
-        x: dir === 1 ? 200 : -200,
-        rotateY: dir === 1 ? -30 : 30,
-        scale: 0.8,
-      }),
-      animate: {
-        opacity: 1,
-        x: 0,
-        rotateY: 0,
-        scale: 1,
-        transition: { duration: 0.4, ease: "easeInOut" },
-      },
-      exit: (dir) => ({
-        opacity: 0,
-        x: dir === 1 ? -200 : 200,
-        rotateY: dir === 1 ? 30 : -30,
-        scale: 0.8,
-        transition: { duration: 0.3, ease: "easeInOut" },
-      }),
-    }}
-    className="cursor-grab active:cursor-grabbing"
-    drag="x"
-    dragConstraints={{ left: 0, right: 0 }}
-    dragElastic={0.2}
-    onDragEnd={(event, info) => {
-      if (info.offset.x < -50) {
-        setDirection(1);
-        nextAlbum();
-      }
-      if (info.offset.x > 50) {
-        setDirection(-1);
-        prevAlbum();
-      }
-    }}
-  >
-    <Link href={`/player/${currentAlbum.id}`}>
-      <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 group-hover:scale-105">
-        <Image
-          src={currentAlbum.cover}
-          alt={currentAlbum.name}
-          fill
-          className="object-cover pointer-events-none select-none"
-          draggable={false}
-          onContextMenu={(e) => e.preventDefault()}
-          sizes="(max-width: 768px) 100vw, 33vw"
-          priority
-        />
-      </div>
-      <h2 className="text-2xl font-bold text-center mt-4 bg-gradient-to-r bg-clip-text text-transparent from-pink-600 to-rose-600">
-        {currentAlbum.name}
-      </h2>
-      <p className="text-gray-600 text-center">{currentAlbum.artist}</p>
-    </Link>
-  </motion.div>
-</AnimatePresence>
+          <motion.div
+            key={currentIndex}
+            custom={direction}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            variants={{
+              initial: (dir) => ({
+                opacity: 0,
+                x: dir === 1 ? 200 : -200,
+                rotateY: dir === 1 ? -30 : 30,
+                scale: 0.8,
+              }),
+              animate: {
+                opacity: 1,
+                x: 0,
+                rotateY: 0,
+                scale: 1,
+                transition: { duration: 0.4, ease: "easeInOut" },
+              },
+              exit: (dir) => ({
+                opacity: 0,
+                x: dir === 1 ? -200 : 200,
+                rotateY: dir === 1 ? 30 : -30,
+                scale: 0.8,
+                transition: { duration: 0.3, ease: "easeInOut" },
+              }),
+            }}
+            className="cursor-grab active:cursor-grabbing will-change-transform"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            onDragEnd={(event, info) => {
+              if (info.offset.x < -50) {
+                setDirection(1);
+                nextAlbum();
+              }
+              if (info.offset.x > 50) {
+                setDirection(-1);
+                prevAlbum();
+              }
+            }}
+          >
+            <Link href={`/player/${currentAlbum.id}`}>
+              <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 group-hover:scale-105">
+                <Image
+                  src={currentAlbum.cover}
+                  alt={currentAlbum.name}
+                  fill
+                  className="object-cover pointer-events-none select-none"
+                  draggable={false}
+                  onContextMenu={(e) => e.preventDefault()}
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  priority
+                />
+              </div>
+              <h2 className="text-2xl font-bold text-center mt-4 bg-gradient-to-r bg-clip-text text-transparent from-pink-600 to-rose-600">
+                {currentAlbum.name}
+              </h2>
+              <p className="text-gray-600 text-center">{currentAlbum.artist}</p>
+            </Link>
+          </motion.div>
+        </AnimatePresence>
 
         <button
           onClick={nextAlbum}
