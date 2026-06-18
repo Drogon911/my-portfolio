@@ -5,19 +5,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import GlassPage from "@/app/components/GlassPage";
 
 const albums = [
   {
     id: 1,
     name: "EP 2010",
     artist: "Eskimo Callboy",
-    cover: "/eskimo-callboy-ep-2010.jpg",
+    cover: "/albums/album-1/eskimo-callboy-ep-2010.jpg",
   },
   {
     id: 2,
     name: "Vegas",
     artist: "Eskimo Callboy",
-    cover: "/vegas-cover.jpg",
+    cover: "/albums/album-2/vegas-cover.jpg",
   },
 ];
 
@@ -26,13 +27,16 @@ export default function Home() {
   const [direction, setDirection] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Загружаем сохранённый индекс один раз при старте
   useEffect(() => {
     const saved = localStorage.getItem("lastAlbumIndex");
     if (saved !== null) {
-      setCurrentIndex(parseInt(saved));
+      setTimeout(() => {
+        setCurrentIndex(parseInt(saved));
+      }, 0);
     }
-    setIsLoaded(true);
+    setTimeout(() => {
+      setIsLoaded(true);
+    }, 0);
   }, []);
 
   useEffect(() => {
@@ -54,8 +58,8 @@ export default function Home() {
   const currentAlbum = albums[currentIndex];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-100 via-pink-50 to-violet-100 flex flex-col items-center justify-center p-6">
-      <h1 className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-violet-600 mb-2 text-center">
+    <GlassPage className="h-230 flex flex-col items-center justify-center p-6 bg-linear-to-br from-pink-200/50 to-pink-100/60">
+      <h1 className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-linear-to-r from-pink-600 to-violet-600 mb-2 text-center">
         Вечеринка уже идёт!!!
       </h1>
       <p className="text-gray-500 mb-12 text-center">
@@ -65,7 +69,7 @@ export default function Home() {
       <div className="relative w-full max-w-md flex items-center justify-center">
         <button
           onClick={prevAlbum}
-          className="absolute left-0 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-white/20 backdrop-blur-md text-pink-600 text-3xl font-bold active:bg-pink-600 active:text-white transition-all duration-200 shadow-lg border border-white/30 hover:bg-pink-600 hover:text-white"
+          className="absolute left-0 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-white/60 backdrop-blur-sm text-pink-600 text-3xl font-bold active:bg-pink-600 active:text-white transition-all duration-200 shadow-lg border border-white/40 hover:bg-pink-600 hover:text-white hover:scale-105"
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
@@ -114,7 +118,7 @@ export default function Home() {
               }
             }}
           >
-            <Link href={`/player/${currentAlbum.id}`}>
+            <Link href={`/album/${currentAlbum.id}`} className="group block">
               <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 group-hover:scale-105">
                 <Image
                   src={currentAlbum.cover}
@@ -127,7 +131,7 @@ export default function Home() {
                   priority
                 />
               </div>
-              <h2 className="text-2xl font-bold text-center mt-4 bg-gradient-to-r bg-clip-text text-transparent from-pink-600 to-rose-600">
+              <h2 className="text-2xl font-bold text-center mt-4 bg-linear-to-r bg-clip-text text-transparent from-pink-600 to-rose-600">
                 {currentAlbum.name}
               </h2>
               <p className="text-gray-600 text-center">{currentAlbum.artist}</p>
@@ -137,7 +141,7 @@ export default function Home() {
 
         <button
           onClick={nextAlbum}
-          className="absolute right-0 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-white/20 backdrop-blur-md text-pink-600 text-3xl font-bold active:bg-pink-600 active:text-white transition-all duration-200 shadow-lg border border-white/30 hover:bg-pink-600 hover:text-white"
+          className="absolute right-0 z-20 flex items-center justify-center w-12 h-12 rounded-full bg-white/60 backdrop-blur-sm text-pink-600 text-3xl font-bold active:bg-pink-600 active:text-white transition-all duration-200 shadow-lg border border-white/40 hover:bg-pink-600 hover:text-white hover:scale-105"
         >
           <ChevronRight className="w-6 h-6" />
         </button>
@@ -154,6 +158,6 @@ export default function Home() {
           />
         ))}
       </div>
-    </div>
+    </GlassPage>
   );
 }

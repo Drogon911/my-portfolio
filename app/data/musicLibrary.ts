@@ -1,0 +1,411 @@
+// app/data/musicLibrary.ts
+
+export type Track = {
+  id: number;
+  title: string;
+  artist: string;
+  src: string;
+  cover: string;
+  albumId: number;
+};
+
+export type Album = {
+  id: number;
+  title: string;
+  artist: string;
+  cover: string;
+  tracks: Track[];
+};
+
+export const musicLibrary: Album[] = [
+  // 1. Альбом 1 (6 песен)
+  {
+    id: 1,
+    title: "EP 2010",
+    artist: "Eskimo Callboy",
+    cover: "/albums/album-1/eskimo-callboy-ep-2010.jpg",
+    tracks: [
+      {
+        id: 1,
+        title: "Intro",
+        artist: "Eskimo Callboy",
+        src: "/albums/album-1/track-1.mp3",
+        cover: "/albums/album-1/cover1a.jpg",
+        albumId: 1,
+      },
+      {
+        id: 2,
+        title: "Antichrist Sex Pornstyle",
+        artist: "Eskimo Callboy",
+        src: "/albums/album-1/track-2.mp3",
+        cover: "/albums/album-1/cover2a.jpg",
+        albumId: 1,
+      },
+      {
+        id: 3,
+        title: "Monsieur Moustache vs Clitcat",
+        artist: "Eskimo Callboy",
+        src: "/albums/album-1/track-3.mp3",
+        cover: "/albums/album-1/cover3.jpg",
+        albumId: 1,
+      },
+      {
+        id: 4,
+        title: "Hey Mrs. Dramaqueen",
+        artist: "Eskimo Callboy",
+        src: "/albums/album-1/track-4.mp3",
+        cover: "/albums/album-1/cover4.jpg",
+        albumId: 1,
+      },
+      {
+        id: 5,
+        title: "Prom Night",
+        artist: "Eskimo Callboy",
+        src: "/albums/album-1/track-5.mp3",
+        cover: "/albums/album-1/cover5.jpg",
+        albumId: 1,
+      },
+      {
+        id: 6,
+        title: "Outro",
+        artist: "Eskimo Callboy",
+        src: "/albums/album-1/track-6.mp3",
+        cover: "/albums/album-1/cover6.jpg",
+        albumId: 1,
+      },
+    ],
+  },
+  // 2. Альбом 2 (11 песен)
+  {
+    id: 2,
+    title: "Bury Me In Vegas",
+    artist: "Eskimo Callboy",
+    cover: "/albums/album-2/vegas-cover.jpg",
+    tracks: [
+      {
+        id: 101,
+        title: "Bury Me In Vegas",
+        artist: "Eskimo Callboy",
+        src: "/albums/album-2/track-1.mp3",
+        cover: "/albums/album-2/cover1v.jpg",
+        albumId: 2,
+      },
+      {
+        id: 102,
+        title: "The Kerosene Dance",
+        artist: "Eskimo Callboy",
+        src: "/albums/album-2/track-2.mp3",
+        cover: "/albums/album-2/cover2v.jpg",
+        albumId: 2,
+      },
+      {
+        id: 103,
+        title: "Internude",
+        artist: "Eskimo Callboy",
+        src: "/albums/album-2/track-3.mp3",
+        cover: "/albums/album-2/cover3v.jpg",
+        albumId: 2,
+      },
+      {
+        id: 104,
+        title: "Is Anyone Up",
+        artist: "Eskimo Callboy",
+        src: "/albums/album-2/track-4.mp3",
+        cover: "/albums/album-2/cover4v.jpg",
+        albumId: 2,
+      },
+      {
+        id: 105,
+        title: "Wonderbra Boulevard",
+        artist: "Eskimo Callboy",
+        src: "/albums/album-2/track-5.mp3",
+        cover: "/albums/album-2/cover5v.jpg",
+        albumId: 2,
+      },
+      {
+        id: 106,
+        title: "Legendary Sleeping Assault",
+        artist: "Eskimo Callboy",
+        src: "/albums/album-2/track-6.mp3",
+        cover: "/albums/album-2/cover6v.jpg",
+        albumId: 2,
+      },
+      {
+        id: 107,
+        title: "Light The Skyline",
+        artist: "Eskimo Callboy",
+        src: "/albums/album-2/track-7.mp3",
+        cover: "/albums/album-2/cover7v.jpg",
+        albumId: 2,
+      },
+      {
+        id: 108,
+        title: "$5 Bitchcore",
+        artist: "Eskimo Callboy",
+        src: "/albums/album-2/track-8.mp3",
+        cover: "/albums/album-2/cover8v.jpg",
+        albumId: 2,
+      },
+      {
+        id: 109,
+        title: "Transilvanian Cunthunger",
+        artist: "Eskimo Callboy",
+        src: "/albums/album-2/track-9.mp3",
+        cover: "/albums/album-2/cover9v.jpg",
+        albumId: 2,
+      },
+      {
+        id: 110,
+        title: "Muffin Purper-Gurk",
+        artist: "Eskimo Callboy",
+        src: "/albums/album-2/track-10.mp3",
+        cover: "/albums/album-2/cover10v.jpg",
+        albumId: 2,
+      },
+      {
+        id: 111,
+        title: "Snow Covered Polaroids",
+        artist: "Eskimo Callboy",
+        src: "/albums/album-2/track-11.mp3",
+        cover: "/albums/album-2/cover11v.jpg",
+        albumId: 2,
+      },
+    ],
+  },
+  // 3. Альбом 3 (13 песен)
+  {
+    id: 3,
+    title: "Take to the Skies",
+    artist: "Enter Shikari",
+    cover: "/albums/album-3/take-to-the-skies.jpg",
+    tracks: [
+      {
+        id: 201,
+        title: "Enter Shikari",
+        artist: "Enter Shikari",
+        src: "/albums/album-3/track-1.mp3",
+        cover: "/albums/album-3/take-to-the-skies.jpg",
+        albumId: 3,
+      },
+      {
+        id: 202,
+        title: "Mothership",
+        artist: "Enter Shikari",
+        src: "/albums/album-3/track-2.mp3",
+        cover: "/albums/album-3/take-to-the-skies.jpg",
+        albumId: 3,
+      },
+      {
+        id: 203,
+        title: "Anything Can Happen In The Next Half Hour",
+        artist: "Enter Shikari",
+        src: "/albums/album-3/track-3.mp3",
+        cover: "/albums/album-3/take-to-the-skies.jpg",
+        albumId: 3,
+      },
+      {
+        id: 204,
+        title: "Labyrinth",
+        artist: "Enter Shikari",
+        src: "/albums/album-3/track-4.mp3",
+        cover: "/albums/album-3/take-to-the-skies.jpg",
+        albumId: 3,
+      },
+      {
+        id: 205,
+        title: "No Sssweat",
+        artist: "Enter Shikari",
+        src: "/albums/album-3/track-5.mp3",
+        cover: "/albums/album-3/take-to-the-skies.jpg",
+        albumId: 3,
+      },
+      {
+        id: 206,
+        title: "Today Won t Go Down In History",
+        artist: "Enter Shikari",
+        src: "/albums/album-3/track-6.mp3",
+        cover: "/albums/album-3/take-to-the-skies.jpg",
+        albumId: 3,
+      },
+      {
+        id: 207,
+        title: "Reprise 1",
+        artist: "Enter Shikari",
+        src: "/albums/album-3/track-7.mp3",
+        cover: "/albums/album-3/take-to-the-skies.jpg",
+        albumId: 3,
+      },
+      {
+        id: 208,
+        title: "Return To Energiser",
+        artist: "Enter Shikari",
+        src: "/albums/album-3/track-8.mp3",
+        cover: "/albums/album-3/take-to-the-skies.jpg",
+        albumId: 3,
+      },
+      {
+        id: 209,
+        title: "Sorry You re Not A Winner",
+        artist: "Enter Shikari",
+        src: "/albums/album-3/track-9.mp3",
+        cover: "/albums/album-3/take-to-the-skies.jpg",
+        albumId: 3,
+      },
+      {
+        id: 210,
+        title: "Jonny Sniper",
+        artist: "Enter Shikari",
+        src: "/albums/album-3/track-10.mp3",
+        cover: "/albums/album-3/take-to-the-skies.jpg",
+        albumId: 3,
+      },
+      {
+        id: 211,
+        title: "Adieu",
+        artist: "Enter Shikari",
+        src: "/albums/album-3/track-11.mp3",
+        cover: "/albums/album-3/take-to-the-skies.jpg",
+        albumId: 3,
+      },
+      {
+        id: 212,
+        title: "Ok Time For Plan B",
+        artist: "Enter Shikari",
+        src: "/albums/album-3/track-12.mp3",
+        cover: "/albums/album-3/take-to-the-skies.jpg",
+        albumId: 3,
+      },
+      {
+        id: 213,
+        title: "Reprise 2",
+        artist: "Enter Shikari",
+        src: "/albums/album-3/track-13.mp3",
+        cover: "/albums/album-3/take-to-the-skies.jpg",
+        albumId: 3,
+      },
+    ],
+  },
+  // 4. Альбом 4 (6 песен)
+  {
+    id: 4,
+    title: "Error 37",
+    artist: "Error 37",
+    cover: "/albums/album-4/error-error.jpg",
+    tracks: [
+      {
+        id: 301,
+        title: "Bunnings",
+        artist: "Error 37",
+        src: "/albums/album-4/track-1.mp3",
+        cover: "/albums/album-4/error-error.jpg",
+        albumId: 4,
+      },
+      {
+        id: 302,
+        title: "Is Having A Sale On Rope",
+        artist: "Error 37",
+        src: "/albums/album-4/track-2.mp3",
+        cover: "/albums/album-4/error-error.jpg",
+        albumId: 4,
+      },
+      {
+        id: 303,
+        title: "xXCactaurXCoreXx",
+        artist: "Error 37",
+        src: "/albums/album-4/track-3.mp3",
+        cover: "/albums/album-4/error-error.jpg",
+        albumId: 4,
+      },
+      {
+        id: 304,
+        title: "Let Us Duel",
+        artist: "Error 37",
+        src: "/albums/album-4/track-4.mp3",
+        cover: "/albums/album-4/error-error.jpg",
+        albumId: 4,
+      },
+      {
+        id: 305,
+        title: "Postman Pat Aint Got Shit On Me",
+        artist: "Error 37",
+        src: "/albums/album-4/track-5.mp3",
+        cover: "/albums/album-4/error-error.jpg",
+        albumId: 4,
+      },
+      {
+        id: 306,
+        title: "Chinese Warlord",
+        artist: "Error 37",
+        src: "/albums/album-4/track-6.mp3",
+        cover: "/albums/album-4/error-error.jpg",
+        albumId: 4,
+      },
+    ],
+  },
+  // 5. Альбом 5 (5 песен)
+  {
+    id: 5,
+    title: "FCGACMAAIGWTUC",
+    artist: "Error 37",
+    cover: "/albums/album-5/fcgacmaaigwtuc.jpg",
+    tracks: [
+      {
+        id: 401,
+        title: "Xkinglerxkorex",
+        artist: "Error 37",
+        src: "/albums/album-5/track-1.mp3",
+        cover: "/albums/album-5/fcgacmaaigwtuc.jpg",
+        albumId: 5,
+      },
+      {
+        id: 402,
+        title: "She Saw Flesh as a Flaw",
+        artist: "Error 37",
+        src: "/albums/album-5/track-2.mp3",
+        cover: "/albums/album-5/fcgacmaaigwtuc.jpg",
+        albumId: 5,
+      },
+      {
+        id: 403,
+        title: "Allergic to Funk",
+        artist: "Error 37",
+        src: "/albums/album-5/track-3.mp3",
+        cover: "/albums/album-5/fcgacmaaigwtuc.jpg",
+        albumId: 5,
+      },
+      {
+        id: 404,
+        title: "I Don't Usually Dance but I Forgot How to Not",
+        artist: "Error 37",
+        src: "/albums/album-5/track-4.mp3",
+        cover: "/albums/album-5/fcgacmaaigwtuc.jpg",
+        albumId: 5,
+      },
+      {
+        id: 405,
+        title: "I Break Bedrock",
+        artist: "Error 37",
+        src: "/albums/album-5/track-5.mp3",
+        cover: "/albums/album-5/fcgacmaaigwtuc.jpg",
+        albumId: 5,
+      },
+    ],
+  },
+  // 6. Альбом 6 (1 песня)
+  {
+    id: 6,
+    title: "Monofluid",
+    artist: "Error 37",
+    cover: "/albums/album-6/monofluid.jpg",
+    tracks: [
+      {
+        id: 501,
+        title: "Monofluid",
+        artist: "Error 37",
+        src: "/albums/album-6/track-1.mp3",
+        cover: "/albums/album-6/monofluid.jpg",
+        albumId: 6,
+      },
+    ],
+  },
+];
