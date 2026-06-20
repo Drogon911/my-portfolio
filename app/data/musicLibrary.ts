@@ -30,7 +30,7 @@ export const musicLibrary: Album[] = [
         title: "Intro",
         artist: "Eskimo Callboy",
         src: "/albums/album-1/track-1.mp3",
-        cover: "/albums/album-1/cover1a.jpg",
+        cover: "/albums/album-1/cover1.jpg",
         albumId: 1,
       },
       {
@@ -38,7 +38,7 @@ export const musicLibrary: Album[] = [
         title: "Antichrist Sex Pornstyle",
         artist: "Eskimo Callboy",
         src: "/albums/album-1/track-2.mp3",
-        cover: "/albums/album-1/cover2a.jpg",
+        cover: "/albums/album-1/cover2.jpg",
         albumId: 1,
       },
       {

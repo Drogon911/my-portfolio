@@ -8,42 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { SkipBack, Play, Pause, SkipForward } from "lucide-react";
 import { useIsMobile } from "@/app/hooks/useIsMobile";
 import { usePlayer } from "@/app/contexts/PlayerContext";
-
-const VolumeIcon = ({
-  level,
-  className = "w-5 h-5",
-}: {
-  level: "off" | "low" | "high";
-  className?: string;
-}) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    {level === "off" ? (
-      <>
-        <path d="M3 8v8h4l5 4V4L7 8H3z" />
-        <line x1="21" y1="3" x2="3" y2="21" />
-      </>
-    ) : level === "low" ? (
-      <>
-        <path d="M3 8v8h4l5 4V4L7 8H3z" />
-        <path d="M17 8c1.5 1.5 1.5 6 0 7.5" />
-      </>
-    ) : (
-      <>
-        <path d="M3 8v8h4l5 4V4L7 8H3z" />
-        <path d="M17 8c1.5 1.5 1.5 6 0 7.5" />
-        <path d="M20 5c2.5 2.5 2.5 11 0 13.5" />
-      </>
-    )}
-  </svg>
-);
+import VolumeIcon from "@/app/components/VolumeIcon";
+import { formatTime } from "@/app/utils/formatTime";
 
 export default function PlayerPage() {
   const params = useParams();
@@ -73,13 +39,6 @@ export default function PlayerPage() {
     setVolume,
     toggleMute,
   } = usePlayer();
-
-  const formatTime = (time: number) => {
-    if (isNaN(time)) return "0:00";
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
-  };
 
   const handleSeek = useCallback(
     (clientX: number) => {
@@ -147,10 +106,10 @@ export default function PlayerPage() {
 
   if (!currentTrack) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-bg-base">
         <div className="text-center">
-          <p className="text-gray-500 mb-4">Ничего не воспроизводится</p>
-          <Link href="/" className="text-pink-500 hover:underline">
+          <p className="text-muted mb-4">Ничего не воспроизводится</p>
+          <Link href="/" className="text-accent hover:underline">
             ← На главную
           </Link>
         </div>
@@ -280,14 +239,16 @@ export default function PlayerPage() {
               onTouchStart={onTouchStart}
               className="relative w-full h-8 -my-1 cursor-pointer group"
             >
-              <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-3 bg-white/30 rounded-full pointer-events-none" />
-              <div
-                className="absolute top-1/2 -translate-y-1/2 left-0 h-3 bg-white rounded-full pointer-events-none will-change-transform"
-                style={{ width: `${progressPercent}%` }}
-              />
+              <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-3 rounded-full overflow-hidden pointer-events-none">
+                <div className="absolute inset-0 bg-white/30" />
+                <div
+                  className="absolute top-0 left-0 h-full bg-white rounded-r-full will-change-transform"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
               <div
                 className="absolute w-5 h-5 bg-white rounded-full top-1/2 -translate-y-1/2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
-                style={{ left: `calc(${progressPercent}% - 10px)` }}
+                style={{ left: `clamp(0px, calc(${progressPercent}% - 10px), calc(100% - 20px))` }}
               />
             </div>
             <div className="flex justify-between text-sm text-white/80 mt-3 font-medium">

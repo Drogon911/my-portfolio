@@ -1,54 +1,93 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Этот файл содержит инструкции для Claude Code при работе с репозиторием.
 
-## Commands
+## Команды
 
 ```bash
-npm run dev      # Start dev server at localhost:3000
-npm run build    # Production build
-npm run lint     # Run ESLint
+npm run dev      # Запустить dev-сервер на localhost:3000
+npm run build    # Продакшн-сборка
+npm run lint     # Запустить ESLint
 ```
 
-> This project runs Next.js 16 with React 19 — APIs and conventions differ from earlier versions. Check `node_modules/next/dist/docs/` before writing code.
+> Проект работает на Next.js 16 с React 19 — API и соглашения отличаются от более ранних версий. Перед написанием кода сверяйся с `node_modules/next/dist/docs/`.
 
-## Architecture
+## Архитектура
 
-**Party** — a music streaming web app (Spotify-style) built with Next.js App Router (TypeScript + Tailwind CSS v4).
+**Party** — музыкальный стриминг (в стиле Spotify), построенный на Next.js App Router (TypeScript + Tailwind CSS v4).
 
-### Route groups
+### Группы маршрутов
 
-- `(main)/` — the main shell with a fixed left sidebar (`app/(main)/layout.tsx`) and a persistent `MiniPlayer` at the bottom. Routes: `/` (home), `/albums`, `/album/[id]`, `/search`, `/favorites`, `/playlists`, `/playlist/[id]`.
-- `(player)/` — a fullscreen player view at `/player/[id]` that renders outside the sidebar layout. Used for immersive mobile-style playback.
+- `(main)/` — основная оболочка с фиксированным левым сайдбаром (`app/(main)/layout.tsx`) и постоянным `MiniPlayer` внизу. Маршруты: `/` (главная), `/albums`, `/album/[id]`, `/search`, `/favorites`, `/playlists`, `/playlist/[id]`.
+- `(player)/` — полноэкранный плеер по адресу `/player/[id]`, рендерится вне лейаута с сайдбаром. Используется для иммерсивного воспроизведения в мобильном стиле.
 
-### Global audio state — `PlayerContext`
+### Глобальное аудио-состояние — `PlayerContext`
 
-`app/contexts/PlayerContext.tsx` owns the single `HTMLAudio` element (created via `new Audio()` in a `useEffect`, not a DOM `<audio>` tag). It exposes `playTrack(track, playlist?)`, `togglePlay`, `nextTrack`, `prevTrack`, `seekTo`, `setVolume`, `toggleMute` via `usePlayer()`.
+`app/contexts/PlayerContext.tsx` владеет единственным элементом `HTMLAudioElement` (создаётся через `new Audio()` в `useEffect`, а не как DOM-тег `<audio>`). Через `usePlayer()` открывает: `playTrack(track, playlist?)`, `togglePlay`, `nextTrack`, `prevTrack`, `seekTo`, `setVolume`, `toggleMute`.
 
-Key implementation details:
-- Progress is animated at 60 fps using `requestAnimationFrame` (not `timeupdate` events) to stay smooth.
-- Volume and mute state are persisted to `localStorage` (`player_volume`, `player_muted`).
-- Queue is stored in both React state and a `ref` (`queueRef`) to avoid stale closures in audio event handlers.
+Ключевые детали реализации:
+- Прогресс анимируется на 60 fps через `requestAnimationFrame` (не через события `timeupdate`) для плавности.
+- Громкость и mute сохраняются в `localStorage` (`player_volume`, `player_muted`).
+- Очередь хранится одновременно в React-состоянии и в `ref` (`queueRef`), чтобы избежать устаревших замыканий в обработчиках аудио-событий.
 
-### Data
+### Данные
 
-All music data lives in `app/data/musicLibrary.ts` as a static `musicLibrary: Album[]` array. There is no backend or API — adding a track means editing this file and placing the `.mp3` under `public/albums/album-N/`.
+Все музыкальные данные хранятся в `app/data/musicLibrary.ts` как статический массив `musicLibrary: Album[]`. Бэкенда нет — добавить трек = отредактировать этот файл и положить `.mp3` в `public/albums/album-N/`.
 
-Track `id` values are not sequential across albums (album 1: 1–6, album 2: 101–111, album 3: 201–213, etc.) — this is intentional to keep IDs globally unique.
+`id` треков не последовательны между альбомами (альбом 1: 1–6, альбом 2: 101–111, альбом 3: 201–213 и т.д.) — это сделано намеренно для глобальной уникальности ID.
 
-### Key components
+### Ключевые компоненты
 
-- `MiniPlayer` — fixed bottom bar, only renders when `currentTrack !== null`. Has a custom drag-to-seek progress bar and a volume slider (desktop only).
-- `TrackRow` — reusable row used in album and playlist pages. Accepts a `variant` prop.
-- `PlayButton` — compact play/pause toggle, used inside search results and track lists.
-- `GlassPage` — a wrapper that applies the frosted-glass card style used across main pages.
+- `MiniPlayer` — фиксированная нижняя панель, рендерится только когда `currentTrack !== null`. Имеет кастомный прогресс-бар с перетаскиванием и слайдер громкости (только десктоп).
+- `TrackRow` — переиспользуемая строка трека для страниц альбома и плейлиста. Принимает проп `variant`.
+- `PlayButton` — компактный переключатель play/pause, используется в результатах поиска и списках треков.
+- `GlassPage` — обёртка с frosted-glass стилем для основных страниц. Серверный компонент (без `"use client"`). Тень задана через `.glass-surface` в `globals.css`.
+- `VolumeIcon` — общий SVG-компонент иконки громкости для состояний (`off` / `low` / `high`). Принимает проп `className`. Используется в `MiniPlayer` и `player/[id]`.
 
-### Search
+### Общие утилиты
 
-`/search` uses [Fuse.js](https://fusejs.io/) for client-side fuzzy search across title, artist, and album title fields. The `fuse` instance is created once at module level (not inside a component) against a flat `allTracks` array derived from `musicLibrary`.
+- `app/utils/formatTime.ts` — форматирует секунды в строку `м:сс`. Используется в `MiniPlayer` и `player/[id]`.
 
-### Styling
+### Поиск
 
-Tailwind CSS v4 with `@tailwindcss/postcss`. The app uses a pink (`#FDF2F8` background, `pink-600` accent) colour palette throughout. Animations use Framer Motion (`framer-motion`).
+`/search` использует [Fuse.js](https://fusejs.io/) для клиентского нечёткого поиска по полям title, artist и название альбома. Экземпляр `fuse` создаётся один раз на уровне модуля (не внутри компонента) на основе плоского массива `allTracks` из `musicLibrary`.
 
-> `app/(main)/albums/page.tsx` has its own local `albums` array that only contains 2 entries — it is **not** sourced from `musicLibrary`. If you add albums to `musicLibrary`, also update this local array.
+### Стилизация
+
+Tailwind CSS v4 с `@tailwindcss/postcss`. Анимации — Framer Motion (`framer-motion`).
+
+**Тема: только тёмная.** Глубокий почти-чёрный фон (`#0a0a0f`) с розово-неоновым акцентом (`pink-500`/`pink-400`). Светлой темы и переключателя нет.
+
+**Цветовые токены** объявлены в `:root` и доступны как Tailwind-утилиты через `@theme inline` в `globals.css`:
+
+| Токен CSS                | Tailwind-класс    | Назначение                        |
+|--------------------------|-------------------|-----------------------------------|
+| `--color-bg-base`        | `bg-bg-base`      | Фон приложения (`#0a0a0f`)        |
+| `--color-surface`        | `bg-surface`      | Базовая карточка (`#16131d`)      |
+| `--color-surface-2`      | `bg-surface-2`    | Приподнятая поверхность (`#211c2c`) |
+| `--color-foreground`     | `text-foreground` | Основной текст (`#f4f4f5`)        |
+| `--color-muted`          | `text-muted`      | Вторичный текст (`#a1a1aa`)       |
+| `--color-subtle`         | `text-subtle`     | Третичный текст (`#71717a`)       |
+| `--color-accent`         | `text-accent` / `bg-accent` | Розовый неон (`#ec4899`) |
+| `--color-accent-hover`   | `text-accent-hover` / `bg-accent-hover` | Светлее при ховере (`#f472b6`) |
+
+**Правила использования цветов:**
+- Текст: `text-foreground` (основной), `text-muted` (вторичный), `text-subtle` (третичный). Никогда не использовать `text-gray-700/800/900` — на тёмном фоне невидимо.
+- Акцент: `text-accent` / `bg-accent`. При ховере на тёмном фоне цвет идёт **светлее** (`bg-accent` → `bg-accent-hover`), а не темнее.
+- Стеклянные поверхности: `bg-white/5 + border border-white/10 + backdrop-blur` (см. `GlassPage`). `.glass-surface` добавляет верхний блик и мягкую тень.
+- Активный/играющий трек: `bg-pink-500/15 border-pink-500/30`.
+- Исключение: полноэкранный `/player/[id]` — сидит на анимированном розово-фиолетовом градиенте с белыми элементами управления.
+
+**Соглашения по типографике** (по референсу SoundCloud):
+- `font-thin` (100) — крупные заголовки, названия альбомов в hero-масштабе
+- `font-semibold` (600) — заголовки секций, подзаголовки
+- `font-bold` (700) — кнопки, CTA-элементы
+- Минимум `text-sm` (14px) для любого читаемого текста
+
+## Роадмап
+
+Текущая фаза — доводка существующего фронтенда до продакшн-качества. Следующая фаза — интеграция бэкенда:
+
+- **Бэкенд:** Supabase или Yandex Cloud (пока не решено)
+- Статический слой `musicLibrary.ts` заменится реальными API-вызовами
+- Аккаунты пользователей, избранное и плейлисты будут храниться в базе данных

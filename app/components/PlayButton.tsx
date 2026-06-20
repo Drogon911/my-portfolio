@@ -43,19 +43,19 @@ export default function PlayButton({
       <div className="flex items-center justify-center w-8 h-8">
         <div className="flex items-center justify-center gap-0.5">
           <div
-            className="w-1 h-2 bg-pink-600 rounded-full animate-[wave_0.8s_ease-in-out_infinite]"
+            className="w-1 h-2 bg-accent rounded-full animate-[wave_0.8s_ease-in-out_infinite]"
             style={{ animationDelay: "0s" }}
           />
           <div
-            className="w-1 h-4 bg-pink-600 rounded-full animate-[wave_0.8s_ease-in-out_infinite]"
+            className="w-1 h-4 bg-accent rounded-full animate-[wave_0.8s_ease-in-out_infinite]"
             style={{ animationDelay: "0.15s" }}
           />
           <div
-            className="w-1 h-3 bg-pink-600 rounded-full animate-[wave_0.8s_ease-in-out_infinite]"
+            className="w-1 h-3 bg-accent rounded-full animate-[wave_0.8s_ease-in-out_infinite]"
             style={{ animationDelay: "0.3s" }}
           />
           <div
-            className="w-1 h-2 bg-pink-600 rounded-full animate-[wave_0.8s_ease-in-out_infinite]"
+            className="w-1 h-2 bg-accent rounded-full animate-[wave_0.8s_ease-in-out_infinite]"
             style={{ animationDelay: "0.45s" }}
           />
         </div>
@@ -69,9 +69,9 @@ export default function PlayButton({
     return (
       <button
         onClick={handleClick}
-        className="flex items-center justify-center w-8 h-8 rounded-full bg-white/40 shadow-md hover:bg-pink-200/70 hover:scale-105 transition-all duration-200"
+        className="flex items-center justify-center w-8 h-8 rounded-full bg-black/50 shadow-md hover:bg-accent/40 hover:scale-105 transition-all duration-200"
       >
-        <Play className="w-4 h-4 fill-pink-600 text-pink-600 transition-transform duration-200 group-hover:scale-105" />
+        <Play className="w-4 h-4 fill-accent text-accent transition-transform duration-200 group-hover:scale-105" />
       </button>
     );
   }
@@ -80,9 +80,9 @@ export default function PlayButton({
   return (
     <button
       onClick={handleClick}
-      className="flex items-center justify-center w-10 h-10 rounded-full bg-white/70 backdrop-blur-sm border border-pink-200 shadow-md hover:bg-pink-200/80 hover:scale-105 transition-all duration-200 group"
+      className="flex items-center justify-center w-10 h-10 rounded-full bg-white/8 border border-accent/20 shadow-md hover:bg-accent/20 hover:scale-105 transition-all duration-200 group"
     >
-      <Play className="w-4 h-4 fill-pink-600 text-pink-600 transition-transform group-hover:scale-105" />
+      <Play className="w-4 h-4 fill-accent text-accent transition-transform group-hover:scale-105" />
     </button>
   );
 }

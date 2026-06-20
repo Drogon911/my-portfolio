@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Library, Disc, Heart, Search } from "lucide-react";
 import MiniPlayer from "@/app/components/MiniPlayer";
+import BottomNav from "@/app/components/BottomNav";
 
 const navItems = [
   { name: "Поиск", href: "/search", icon: Search },
@@ -37,12 +38,12 @@ export default function MainLayout({
   };
 
   return (
-    <div className="flex min-h-screen bg-[#FDF2F8]">
-      {/* Фиксированный сайдбар */}
-      <aside className="fixed left-0 top-0 h-full w-72 p-6 border-r border-gray-200/30 bg-[#FDF2F8] flex flex-col">
+    <div className="flex min-h-screen bg-bg-base">
+      {/* Сайдбар — только десктоп */}
+      <aside className="hidden md:flex fixed left-0 top-0 h-full w-72 p-6 border-r border-white/10 bg-bg-base flex-col">
         {/* Логотип Party */}
         <Link href="/" className="block px-2 mb-10 group">
-          <span className="text-5xl font-black tracking-wide bg-linear-to-r from-pink-400 to-pink-400 bg-clip-text text-transparent drop-shadow-md transition-all duration-500 group-hover:scale-105 group-hover:from-pink-500 group-hover:to-pink-500">
+          <span className="text-5xl font-black tracking-wide text-accent transition-all duration-500 group-hover:scale-105 group-hover:text-accent-hover">
             Party
           </span>
           <p className="text-[11px] font-medium text-pink-400/80 tracking-wider mt-1 ml-0.5">
@@ -63,8 +64,8 @@ export default function MainLayout({
                   flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200
                   ${
                     active
-                      ? "bg-white/50 text-pink-600 shadow-sm"
-                      : "text-gray-600 hover:bg-white/30 hover:text-pink-500"
+                      ? "bg-white/10 text-accent shadow-sm"
+                      : "text-muted hover:bg-white/5 hover:text-accent"
                   }
                 `}
               >
@@ -81,8 +82,9 @@ export default function MainLayout({
       </aside>
 
       {/* Контент */}
-      <main className="flex-1 ml-72 p-6">{children}</main>
+      <main className="flex-1 ml-0 md:ml-72 p-4 md:p-6 pb-32 md:pb-6">{children}</main>
       <MiniPlayer />
+      <BottomNav />
     </div>
   );
 }

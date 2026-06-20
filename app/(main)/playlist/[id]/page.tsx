@@ -17,17 +17,17 @@ export default function PlaylistPage() {
   if (!playlist) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <p className="text-gray-500 text-lg">Плейлист не найден</p>
+        <p className="text-muted text-lg">Плейлист не найден</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-rose-50 via-pink-50 to-violet-50">
+    <div className="min-h-screen">
       <div className="max-w-5xl mx-auto px-6 py-12">
         {/* Шапка плейлиста */}
-        <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center md:items-end mb-12 p-6 md:p-8 rounded-3xl bg-white/70 backdrop-blur-xl border border-white/60 shadow-xl">
-          <div className="w-40 h-40 md:w-48 md:h-48 rounded-2xl shadow-2xl overflow-hidden shrink-0 ring-2 ring-white/50">
+        <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center md:items-end mb-12 p-6 md:p-8 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl">
+          <div className="w-40 h-40 md:w-48 md:h-48 rounded-2xl shadow-2xl overflow-hidden shrink-0 ring-1 ring-white/10">
             <Image
               src={playlist.cover}
               alt={playlist.title}
@@ -38,14 +38,14 @@ export default function PlaylistPage() {
             />
           </div>
           <div className="text-center md:text-left">
-            <p className="text-pink-600 text-sm font-semibold uppercase tracking-wider mb-2">
+            <p className="text-accent text-sm font-semibold uppercase tracking-wider mb-2">
               Плейлист
             </p>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-800 tracking-tight mb-2">
+            <h1 className="text-4xl md:text-5xl font-semibold text-foreground tracking-tight mb-2">
               {playlist.title}
             </h1>
-            <p className="text-gray-600 text-lg mb-1">{playlist.artist}</p>
-            <p className="text-gray-500 text-sm">
+            <p className="text-muted text-lg mb-1">{playlist.artist}</p>
+            <p className="text-subtle text-sm">
               {playlist.tracks.length} треков
             </p>
           </div>

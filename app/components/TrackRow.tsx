@@ -18,19 +18,19 @@ export default function TrackRow({
   tracks,
   isPlaying,
 }: TrackRowProps) {
-  const baseRowClasses = `group grid grid-cols-12 gap-4 items-center px-5 py-3 rounded-xl transition-all duration-200 border border-white/50 cursor-pointer
+  const baseRowClasses = `group flex md:grid md:grid-cols-12 gap-3 md:gap-4 items-center px-4 md:px-5 py-3 rounded-xl transition-all duration-200 border cursor-pointer
     ${
       isPlaying
-        ? "bg-pink-100/70 shadow-md"
-        : "bg-white/30 hover:bg-pink-100/50 hover:shadow-md"
+        ? "bg-accent/10 border-accent/20"
+        : "bg-white/5 border-white/8 hover:bg-white/10"
     }`;
 
   if (variant === "album") {
     return (
       <div className={baseRowClasses}>
-        <div className="col-span-1 flex items-center justify-start">
+        <div className="shrink-0 md:col-span-1 flex items-center justify-start w-8 md:w-auto">
           {!isPlaying && (
-            <span className="text-gray-400 text-sm font-mono group-hover:hidden">
+            <span className="text-subtle text-sm font-mono group-hover:hidden">
               {index + 1}
             </span>
           )}
@@ -42,13 +42,13 @@ export default function TrackRow({
             />
           </div>
         </div>
-        <div className="col-span-11">
+        <div className="flex-1 min-w-0 md:col-span-11">
           <p
-            className={`font-medium truncate ${isPlaying ? "text-pink-800" : "text-gray-800"}`}
+            className={`font-medium truncate ${isPlaying ? "text-accent" : "text-foreground"}`}
           >
             {track.title}
           </p>
-          <p className="text-sm text-gray-500 truncate">{track.artist}</p>
+          <p className="text-sm text-muted truncate">{track.artist}</p>
         </div>
       </div>
     );
@@ -57,7 +57,7 @@ export default function TrackRow({
   // variant === "playlist"
   return (
     <div className={baseRowClasses}>
-      <div className="col-span-2 md:col-span-1 flex items-center justify-start">
+      <div className="shrink-0 md:col-span-1 flex items-center justify-start">
         <div className="relative w-12 h-12 rounded-lg overflow-hidden shadow-md shrink-0">
           <Image
             src={track.cover}
@@ -80,13 +80,13 @@ export default function TrackRow({
           </div>
         </div>
       </div>
-      <div className="col-span-10 md:col-span-11">
+      <div className="flex-1 min-w-0 md:col-span-11">
         <p
-          className={`font-medium truncate ${isPlaying ? "text-pink-800" : "text-gray-800"}`}
+          className={`font-medium truncate ${isPlaying ? "text-accent" : "text-foreground"}`}
         >
           {track.title}
         </p>
-        <p className="text-sm text-gray-500 truncate">{track.artist}</p>
+        <p className="text-sm text-zinc-400 truncate">{track.artist}</p>
       </div>
     </div>
   );
