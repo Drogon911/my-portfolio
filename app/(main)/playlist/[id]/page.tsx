@@ -26,7 +26,7 @@ export default function PlaylistPage() {
     <div className="min-h-screen">
       <div className="max-w-5xl mx-auto px-6 py-12">
         {/* Шапка плейлиста */}
-        <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center md:items-end mb-12 p-6 md:p-8 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl">
+        <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center md:items-end mb-12 p-6 md:p-8 rounded-3xl bg-white/5 border border-white/10 shadow-xl">
           <div className="w-40 h-40 md:w-48 md:h-48 rounded-2xl shadow-2xl overflow-hidden shrink-0 ring-1 ring-white/10">
             <Image
               src={playlist.cover}

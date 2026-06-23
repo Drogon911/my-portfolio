@@ -23,7 +23,11 @@ npm run lint     # Запустить ESLint
 
 ### Глобальное аудио-состояние — `PlayerContext`
 
-`app/contexts/PlayerContext.tsx` владеет единственным элементом `HTMLAudioElement` (создаётся через `new Audio()` в `useEffect`, а не как DOM-тег `<audio>`). Через `usePlayer()` открывает: `playTrack(track, playlist?)`, `togglePlay`, `nextTrack`, `prevTrack`, `seekTo`, `setVolume`, `toggleMute`.
+`app/contexts/PlayerContext.tsx` владеет единственным элементом `HTMLAudioElement` (создаётся через `new Audio()` в `useEffect`, а не как DOM-тег `<audio>`).
+
+Контекст разделён на два хука ради производительности:
+- `usePlayer()` — `currentTrack`, `isPlaying`, `duration`, громкость, управление (`playTrack`, `togglePlay`, `nextTrack`, `prevTrack`, `seekTo`, `setVolume`, `toggleMute`). Меняется редко, значение мемоизировано через `useMemo`.
+- `usePlayerProgress()` — только `progress: number`. Обновляется 60 раз/сек через `requestAnimationFrame`. **Использовать только в полосках прогресса** — иначе весь компонент будет перерисовываться на каждом кадре.
 
 Ключевые детали реализации:
 - Прогресс анимируется на 60 fps через `requestAnimationFrame` (не через события `timeupdate`) для плавности.
@@ -52,6 +56,24 @@ npm run lint     # Запустить ESLint
 
 `/search` использует [Fuse.js](https://fusejs.io/) для клиентского нечёткого поиска по полям title, artist и название альбома. Экземпляр `fuse` создаётся один раз на уровне модуля (не внутри компонента) на основе плоского массива `allTracks` из `musicLibrary`.
 
+### Производительность
+
+Все решения продиктованы реальным профилированием на мобиле — не преждевременная оптимизация.
+
+**Контекст плеера разделён на два хука** (`usePlayer` / `usePlayerProgress`), чтобы 60fps-прогресс не перерисовывал весь дерево компонентов. `usePlayerProgress()` использовать **только** в полосках прогресса.
+
+**`backdrop-blur` намеренно убран** везде, кроме `MiniPlayer` и кнопок навигации на `/albums` — тяжёл для мобильного GPU, бессмысленен над сплошным фоном.
+
+**CSS `filter: blur()` в рантайме — запрещён для фонов.** Вместо этого используем предрендеренные размытые обложки:
+- Скрипт: `node scripts/generate-blurred-covers.mjs` (sharp, устанавливается один раз)
+- Генерирует `cover-blur.jpg` (64×64px) рядом с каждой обложкой альбома в `public/albums/album-N/`
+- При добавлении нового альбома — запустить скрипт повторно
+- Почему: CSS `blur-3xl` на полном экране ≈ 64 млн операций/кадр, предрендер ≈ 330 тыс (в ~200 раз дешевле)
+
+**`React.memo`** на `TrackRow` и `PlayButton` — при смене трека перерисовывается только затронутая строка. Стабильные ссылки на массивы плейлистов обязательны: `playlistByAlbumId` вычисляется на уровне модуля в `/search`, иначе `memo` ломается.
+
+**Продакшн-сборка через Webpack** (`next build --webpack`) — Turbopack по умолчанию в Next.js 16 включает `next-devtools` (+135KB) и не минифицирует чанки.
+
 ### Стилизация
 
 Tailwind CSS v4 с `@tailwindcss/postcss`. Анимации — Framer Motion (`framer-motion`).
@@ -74,7 +96,7 @@ Tailwind CSS v4 с `@tailwindcss/postcss`. Анимации — Framer Motion (`
 **Правила использования цветов:**
 - Текст: `text-foreground` (основной), `text-muted` (вторичный), `text-subtle` (третичный). Никогда не использовать `text-gray-700/800/900` — на тёмном фоне невидимо.
 - Акцент: `text-accent` / `bg-accent`. При ховере на тёмном фоне цвет идёт **светлее** (`bg-accent` → `bg-accent-hover`), а не темнее.
-- Стеклянные поверхности: `bg-white/5 + border border-white/10 + backdrop-blur` (см. `GlassPage`). `.glass-surface` добавляет верхний блик и мягкую тень.
+- Стеклянные поверхности: `bg-white/5 + border border-white/10` (см. `GlassPage`). `.glass-surface` добавляет верхний блик и мягкую тень.
 - Активный/играющий трек: `bg-pink-500/15 border-pink-500/30`.
 - Исключение: полноэкранный `/player/[id]` — сидит на анимированном розово-фиолетовом градиенте с белыми элементами управления.
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import Image from "next/image";
 import PlayButton from "./PlayButton";
 import type { Track } from "@/app/data/musicLibrary";
@@ -11,7 +12,7 @@ interface TrackRowProps {
   isPlaying: boolean;
 }
 
-export default function TrackRow({
+export default memo(function TrackRow({
   track,
   index,
   variant,
@@ -90,4 +91,4 @@ export default function TrackRow({
       </div>
     </div>
   );
-}
+});

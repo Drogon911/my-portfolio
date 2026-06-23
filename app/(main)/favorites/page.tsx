@@ -10,7 +10,7 @@ export default function FavoritesPage() {
         <h1 className="text-3xl font-semibold text-foreground">Избранное</h1>
       </div>
 
-      <div className="text-center py-12 md:py-16 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/8">
+      <div className="text-center py-12 md:py-16 bg-white/5 rounded-2xl border border-white/8">
         <Heart className="w-14 h-14 md:w-16 md:h-16 text-subtle mx-auto mb-4" />
         <p className="text-muted text-lg">У вас пока нет избранных треков</p>
         <p className="text-subtle mt-2 text-sm md:text-base px-4">

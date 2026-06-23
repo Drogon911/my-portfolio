@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { musicLibrary } from "@/app/data/musicLibrary";
 import Fuse from "fuse.js";
 import Image from "next/image";
@@ -18,6 +19,16 @@ const allTracks = musicLibrary.flatMap((album) =>
   })),
 );
 
+// Стабильные ссылки на плейлисты по альбому — чтобы не создавать новый массив
+// на каждый рендер результата поиска (иначе ломается React.memo у PlayButton).
+const playlistByAlbumId = musicLibrary.reduce<Record<number, typeof allTracks>>(
+  (acc, album) => {
+    acc[album.id] = allTracks.filter((t) => t.albumId === album.id);
+    return acc;
+  },
+  {},
+);
+
 const fuse = new Fuse(allTracks, {
   keys: [
     { name: "title", weight: 2 },
@@ -31,11 +42,18 @@ const fuse = new Fuse(allTracks, {
 
 export default function SearchPage() {
   const { currentTrack } = usePlayer();
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<typeof allTracks>([]);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const initialQuery = searchParams.get("q") ?? "";
+  const [query, setQuery] = useState(initialQuery);
+  const [results, setResults] = useState<typeof allTracks>(() =>
+    initialQuery ? fuse.search(initialQuery).map((r) => r.item) : []
+  );
 
   const handleSearch = (q: string) => {
     setQuery(q);
+    router.replace(q ? `/search?q=${encodeURIComponent(q)}` : "/search", { scroll: false });
     if (q.trim() === "") {
       setResults([]);
       return;
@@ -46,6 +64,7 @@ export default function SearchPage() {
   const clearSearch = () => {
     setQuery("");
     setResults([]);
+    router.replace("/search", { scroll: false });
   };
 
   const isActive = (id: number) => currentTrack?.id === id;
@@ -73,7 +92,7 @@ export default function SearchPage() {
           value={query}
           onChange={(e) => handleSearch(e.target.value)}
           placeholder="Например: «Eskimo Callboy» или «Prom Night»..."
-          className="w-full pl-11 pr-10 py-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm shadow-sm
+          className="w-full pl-11 pr-10 py-3 rounded-xl bg-white/5 border border-white/10 shadow-sm
             focus:shadow-md focus:border-accent/50 focus:ring-1 focus:ring-accent/30
             text-foreground placeholder-subtle focus:outline-none transition-all duration-200"
           autoFocus
@@ -97,7 +116,7 @@ export default function SearchPage() {
           </p>
 
           {results.length === 0 ? (
-            <div className="text-center py-16 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/8">
+            <div className="text-center py-16 bg-white/5 rounded-2xl border border-white/8">
               <p className="text-muted text-lg">Ничего не найдено</p>
               <p className="text-subtle mt-2">Попробуйте изменить запрос</p>
             </div>
@@ -126,9 +145,7 @@ export default function SearchPage() {
                         <PlayButton
                           trackId={track.id}
                           track={track}
-                          playlistTracks={allTracks.filter(
-                            (t) => t.albumId === track.albumId,
-                          )}
+                          playlistTracks={playlistByAlbumId[track.albumId]}
                           isCompact
                         />
                       </div>
@@ -156,7 +173,7 @@ export default function SearchPage() {
 
       {/* Подсказка когда нет запроса */}
       {!query && (
-        <div className="text-center py-16 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/8">
+        <div className="text-center py-16 bg-white/5 rounded-2xl border border-white/8">
           <Search className="w-12 h-12 text-subtle mx-auto mb-4" />
           <p className="text-muted text-lg">
             Начните вводить название песни или исполнителя

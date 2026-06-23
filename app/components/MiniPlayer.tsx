@@ -1,6 +1,6 @@
 "use client";
 
-import { usePlayer } from "@/app/contexts/PlayerContext";
+import { usePlayer, usePlayerProgress } from "@/app/contexts/PlayerContext";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,37 +9,25 @@ import { useRef, useCallback, useState } from "react";
 import VolumeIcon from "@/app/components/VolumeIcon";
 import { formatTime } from "@/app/utils/formatTime";
 
-export default function MiniPlayer() {
-  const {
-    currentTrack,
-    isPlaying,
-    togglePlay,
-    nextTrack,
-    prevTrack,
-    progress,
-    duration,
-    seekTo,
-    volume,
-    isMuted,
-    setVolume,
-    toggleMute,
-  } = usePlayer();
-
-  const router = useRouter();
+// Изолированная полоса прогресса: только она подписана на 60fps-обновления прогресса,
+// поэтому остальной мини-плеер не перерисовывается во время проигрывания.
+function MiniProgressBar({
+  duration,
+  seekTo,
+}: {
+  duration: number;
+  seekTo: (time: number) => void;
+}) {
+  const progress = usePlayerProgress();
   const progressBarRef = useRef<HTMLDivElement>(null);
-
-  // Состояния для tooltip
   const [showTooltip, setShowTooltip] = useState(false);
 
-  // Перемотка при клике
   const handleSeek = useCallback(
     (clientX: number) => {
       if (!progressBarRef.current || !duration) return;
       const rect = progressBarRef.current.getBoundingClientRect();
       const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
-      const percent = x / rect.width;
-      const newTime = percent * duration;
-      seekTo(newTime);
+      seekTo((x / rect.width) * duration);
     },
     [duration, seekTo],
   );
@@ -56,13 +44,64 @@ export default function MiniPlayer() {
     window.addEventListener("mouseup", handleMouseUp);
   };
 
-  const handleMouseEnter = () => setShowTooltip(true);
-  const handleMouseLeave = () => setShowTooltip(false);
+  const progressPercent = duration > 0 ? (progress / duration) * 100 : 0;
+
+  return (
+    <div className="px-5 md:px-6" onClick={(e) => e.stopPropagation()}>
+      <div
+        ref={progressBarRef}
+        onMouseDown={onMouseDown}
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+        className="relative w-full h-4 -my-1.5 cursor-pointer group"
+      >
+        {/* Фон прогресс-бара */}
+        <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-1 bg-white/12 rounded-full pointer-events-none" />
+
+        {/* Заполненная часть */}
+        <div
+          className="absolute top-1/2 -translate-y-1/2 left-0 h-1 bg-white rounded-full pointer-events-none will-change-transform"
+          style={{ width: `${progressPercent}%` }}
+        />
+
+        {/* Кружок-ползунок */}
+        <div
+          className="absolute w-2.5 h-2.5 bg-white rounded-full top-1/2 -translate-y-1/2 transition-opacity duration-150 opacity-0 group-hover:opacity-100"
+          style={{ left: `clamp(0px, calc(${progressPercent}% - 5px), calc(100% - 10px))` }}
+        />
+
+        {/* Tooltip */}
+        {showTooltip && (
+          <div
+            className="absolute bottom-6 left-0 transform -translate-x-1/2 bg-surface text-foreground text-sm font-semibold px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap pointer-events-none z-50 transition-opacity duration-150 border border-white/10"
+            style={{ left: `${progressPercent}%` }}
+          >
+            {formatTime(progress)}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default function MiniPlayer() {
+  const {
+    currentTrack,
+    isPlaying,
+    togglePlay,
+    nextTrack,
+    prevTrack,
+    duration,
+    seekTo,
+    volume,
+    isMuted,
+    setVolume,
+    toggleMute,
+  } = usePlayer();
+
+  const router = useRouter();
 
   if (!currentTrack) return null;
-
-  const progressPercent = duration > 0 ? (progress / duration) * 100 : 0;
-  const currentTimeFormatted = formatTime(progress);
 
   return (
     <div
@@ -71,40 +110,7 @@ export default function MiniPlayer() {
     >
       <div className="relative bg-bg-base/85 backdrop-blur-md border-t border-white/10 rounded-t-2xl shadow-xl transition-all duration-300">
         {/* Прогресс-бар с tooltip */}
-        <div className="px-5 md:px-6" onClick={(e) => e.stopPropagation()}>
-          <div
-            ref={progressBarRef}
-            onMouseDown={onMouseDown}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            className="relative w-full h-4 -my-1.5 cursor-pointer group"
-          >
-            {/* Фон прогресс-бара */}
-            <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-1 bg-white/12 rounded-full pointer-events-none" />
-
-            {/* Заполненная часть */}
-            <div
-              className="absolute top-1/2 -translate-y-1/2 left-0 h-1 bg-white rounded-full pointer-events-none will-change-transform"
-              style={{ width: `${progressPercent}%` }}
-            />
-
-            {/* Кружок-ползунок */}
-            <div
-              className="absolute w-2.5 h-2.5 bg-white rounded-full top-1/2 -translate-y-1/2 transition-opacity duration-150 opacity-0 group-hover:opacity-100"
-              style={{ left: `clamp(0px, calc(${progressPercent}% - 5px), calc(100% - 10px))` }}
-            />
-
-            {/* Tooltip */}
-            {showTooltip && (
-              <div
-                className="absolute bottom-6 left-0 transform -translate-x-1/2 bg-surface text-foreground text-sm font-semibold px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap pointer-events-none z-50 transition-opacity duration-150 border border-white/10"
-                style={{ left: `${progressPercent}%` }}
-              >
-                {currentTimeFormatted}
-              </div>
-            )}
-          </div>
-        </div>
+        <MiniProgressBar duration={duration} seekTo={seekTo} />
 
         {/* Основной контент */}
         <div className="px-5 py-3 md:px-6 md:py-4">

@@ -6,6 +6,7 @@ import { usePlayer } from "@/app/contexts/PlayerContext";
 import Image from "next/image";
 import TrackRow from "@/app/components/TrackRow";
 import GlassPage from "@/app/components/GlassPage";
+import BackButton from "@/app/components/BackButton";
 
 export default function AlbumPage() {
   const params = useParams();
@@ -23,8 +24,9 @@ export default function AlbumPage() {
 
   return (
     <GlassPage className="min-h-screen w-full">
+      <BackButton href="/albums" />
       {/* Шапка альбома */}
-      <div className="relative z-10 flex flex-col md:flex-row gap-4 md:gap-8 items-center md:items-end mb-6 md:mb-12 p-5 md:p-8 rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl">
+      <div className="relative z-10 flex flex-col md:flex-row gap-4 md:gap-8 items-center md:items-end mt-8 mb-6 md:mb-12 p-5 md:p-8 rounded-3xl bg-white/5 border border-white/10 shadow-xl">
         <div className="w-40 h-40 md:w-48 md:h-48 rounded-2xl shadow-2xl overflow-hidden shrink-0 ring-1 ring-white/10">
           <Image
             src={album.cover}

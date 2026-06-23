@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { usePlayer } from "@/app/contexts/PlayerContext";
 import type { Track } from "@/app/data/musicLibrary";
 import { Play } from "lucide-react";
@@ -11,7 +12,7 @@ interface PlayButtonProps {
   isCompact?: boolean;
 }
 
-export default function PlayButton({
+export default memo(function PlayButton({
   trackId,
   track,
   playlistTracks,
@@ -85,4 +86,4 @@ export default function PlayButton({
       <Play className="w-4 h-4 fill-accent text-accent transition-transform group-hover:scale-105" />
     </button>
   );
-}
+});

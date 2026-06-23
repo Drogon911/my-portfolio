@@ -3,42 +3,26 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useCallback, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { SkipBack, Play, Pause, SkipForward } from "lucide-react";
 import { useIsMobile } from "@/app/hooks/useIsMobile";
-import { usePlayer } from "@/app/contexts/PlayerContext";
+import { usePlayer, usePlayerProgress } from "@/app/contexts/PlayerContext";
 import VolumeIcon from "@/app/components/VolumeIcon";
+import BackButton from "@/app/components/BackButton";
 import { formatTime } from "@/app/utils/formatTime";
 
-export default function PlayerPage() {
-  const params = useParams();
-  const albumId = params.id as string;
-  const isMobile = useIsMobile();
+// Изолированная полоса прогресса — только она подписана на 60fps-обновления,
+// поэтому остальной плеер (и дерево Framer Motion) не перерисовывается при проигрывании.
+function PlayerProgressBar({
+  duration,
+  seekTo,
+}: {
+  duration: number;
+  seekTo: (time: number) => void;
+}) {
+  const progress = usePlayerProgress();
   const progressBarRef = useRef<HTMLDivElement>(null);
-  const volumeBarRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
-  const [isExiting, setIsExiting] = useState(false);
-
-  const handleBack = () => {
-    setIsExiting(true);
-    setTimeout(() => router.push(`/album/${albumId}`), 350);
-  };
-
-  const {
-    currentTrack,
-    isPlaying,
-    progress,
-    duration,
-    togglePlay,
-    nextTrack,
-    prevTrack,
-    seekTo,
-    volume,
-    isMuted,
-    setVolume,
-    toggleMute,
-  } = usePlayer();
 
   const handleSeek = useCallback(
     (clientX: number) => {
@@ -71,6 +55,63 @@ export default function PlayerPage() {
     window.addEventListener("touchmove", onMove, { passive: true });
     window.addEventListener("touchend", onEnd);
   };
+
+  const progressPercent = duration > 0 ? (progress / duration) * 100 : 0;
+
+  return (
+    <div className="max-w-4xl mx-auto w-full">
+      {/* Кастомный прогресс-бар */}
+      <div
+        ref={progressBarRef}
+        onMouseDown={onMouseDown}
+        onTouchStart={onTouchStart}
+        className="relative w-full h-8 -my-1 cursor-pointer group"
+      >
+        <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-3 rounded-full overflow-hidden pointer-events-none">
+          <div className="absolute inset-0 bg-white/30" />
+          <div
+            className="absolute top-0 left-0 h-full bg-white rounded-r-full will-change-transform"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+        <div
+          className="absolute w-5 h-5 bg-white rounded-full top-1/2 -translate-y-1/2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
+          style={{ left: `clamp(0px, calc(${progressPercent}% - 10px), calc(100% - 20px))` }}
+        />
+      </div>
+      <div className="flex justify-between text-sm text-white/80 mt-3 font-medium">
+        <span>{formatTime(progress)}</span>
+        <span>{formatTime(duration)}</span>
+      </div>
+    </div>
+  );
+}
+
+export default function PlayerPage() {
+
+  const isMobile = useIsMobile();
+  const volumeBarRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const [isExiting, setIsExiting] = useState(false);
+
+  const handleBack = () => {
+    setIsExiting(true);
+    setTimeout(() => router.back(), 350);
+  };
+
+  const {
+    currentTrack,
+    isPlaying,
+    duration,
+    togglePlay,
+    nextTrack,
+    prevTrack,
+    seekTo,
+    volume,
+    isMuted,
+    setVolume,
+    toggleMute,
+  } = usePlayer();
 
   const handleVolumeSeek = useCallback(
     (clientY: number) => {
@@ -117,8 +158,6 @@ export default function PlayerPage() {
     );
   }
 
-  const progressPercent = duration > 0 ? (progress / duration) * 100 : 0;
-
   return (
     <motion.div
       className="min-h-screen flex flex-col relative overflow-hidden"
@@ -139,14 +178,7 @@ export default function PlayerPage() {
       />
       <div className="absolute inset-0 bg-black/25" />
 
-      <div className="absolute top-4 left-4 z-50">
-        <button
-          onClick={handleBack}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-white text-sm font-medium hover:bg-purple-500/40 transition-all duration-300 border border-white/30 shadow-lg"
-        >
-          ← К альбому
-        </button>
-      </div>
+      <BackButton onClick={handleBack} />
 
       <div className="relative z-10 flex-1 flex flex-col">
         <div className="flex-1 flex flex-col items-center justify-center p-6">
@@ -168,7 +200,7 @@ export default function PlayerPage() {
                 className="cursor-grab active:cursor-grabbing will-change-transform"
               >
                 <div
-                  className={`relative w-64 h-64 md:w-80 md:h-80 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm transition-all duration-700 ${
+                  className={`relative w-64 h-64 md:w-80 md:h-80 rounded-2xl overflow-hidden bg-white/10 transition-all duration-700 ${
                     isPlaying
                       ? "shadow-[0_0_60px_rgba(219,39,119,0.6)] scale-105"
                       : "shadow-2xl"
@@ -193,7 +225,7 @@ export default function PlayerPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.2 }}
-                className={`relative w-64 h-64 md:w-80 md:h-80 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm will-change-transform transition-all duration-700 ${
+                className={`relative w-64 h-64 md:w-80 md:h-80 rounded-2xl overflow-hidden bg-white/10 will-change-transform transition-all duration-700 ${
                   isPlaying
                     ? "shadow-[0_0_60px_rgba(219,39,119,0.6)] scale-105"
                     : "shadow-2xl"
@@ -230,32 +262,8 @@ export default function PlayerPage() {
           </p>
         </div>
 
-        <div className="w-full bg-white/20 backdrop-blur-lg border-t border-white/30 shadow-2xl rounded-t-3xl p-6 pb-8">
-          <div className="max-w-4xl mx-auto w-full">
-            {/* Кастомный прогресс-бар */}
-            <div
-              ref={progressBarRef}
-              onMouseDown={onMouseDown}
-              onTouchStart={onTouchStart}
-              className="relative w-full h-8 -my-1 cursor-pointer group"
-            >
-              <div className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-3 rounded-full overflow-hidden pointer-events-none">
-                <div className="absolute inset-0 bg-white/30" />
-                <div
-                  className="absolute top-0 left-0 h-full bg-white rounded-r-full will-change-transform"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-              <div
-                className="absolute w-5 h-5 bg-white rounded-full top-1/2 -translate-y-1/2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
-                style={{ left: `clamp(0px, calc(${progressPercent}% - 10px), calc(100% - 20px))` }}
-              />
-            </div>
-            <div className="flex justify-between text-sm text-white/80 mt-3 font-medium">
-              <span>{formatTime(progress)}</span>
-              <span>{formatTime(duration)}</span>
-            </div>
-          </div>
+        <div className="w-full bg-white/20 border-t border-white/30 shadow-2xl rounded-t-3xl p-6 pb-8">
+          <PlayerProgressBar duration={duration} seekTo={seekTo} />
 
           <div className="relative max-w-2xl mx-auto w-full mt-6">
             {/* Кнопки управления — по центру */}

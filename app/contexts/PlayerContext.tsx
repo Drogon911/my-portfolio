@@ -1,12 +1,11 @@
 "use client";
 
-import React, { createContext, useContext, useRef, useState, useEffect, ReactNode, useCallback } from "react";
+import React, { createContext, useContext, useRef, useState, useEffect, ReactNode, useCallback, useMemo } from "react";
 import type { Track } from "@/app/data/musicLibrary";
 
 type PlayerContextType = {
   currentTrack: Track | null;
   isPlaying: boolean;
-  progress: number;
   duration: number;
   volume: number;
   isMuted: boolean;
@@ -21,11 +20,17 @@ type PlayerContextType = {
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
 
+// Прогресс обновляется 60 раз/сек, поэтому он живёт в отдельном контексте —
+// чтобы перерисовывались только сами полоски прогресса, а не всё дерево плеера.
+const PlayerProgressContext = createContext<number>(0);
+
 export const usePlayer = () => {
   const context = useContext(PlayerContext);
   if (!context) throw new Error("usePlayer must be used within PlayerProvider");
   return context;
 };
+
+export const usePlayerProgress = () => useContext(PlayerProgressContext);
 
 export const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
@@ -358,25 +363,42 @@ export const PlayerProvider = ({ children }: { children: ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nextTrack, startSmoothProgress, stopSmoothProgress]);
 
+  const value = useMemo<PlayerContextType>(
+    () => ({
+      currentTrack,
+      isPlaying,
+      duration,
+      volume,
+      isMuted,
+      playTrack,
+      togglePlay,
+      nextTrack,
+      prevTrack,
+      seekTo,
+      setVolume,
+      toggleMute,
+    }),
+    [
+      currentTrack,
+      isPlaying,
+      duration,
+      volume,
+      isMuted,
+      playTrack,
+      togglePlay,
+      nextTrack,
+      prevTrack,
+      seekTo,
+      setVolume,
+      toggleMute,
+    ],
+  );
+
   return (
-    <PlayerContext.Provider
-      value={{
-        currentTrack,
-        isPlaying,
-        progress,
-        duration,
-        volume,
-        isMuted,
-        playTrack,
-        togglePlay,
-        nextTrack,
-        prevTrack,
-        seekTo,
-        setVolume,
-        toggleMute,
-      }}
-    >
-      {children}
+    <PlayerContext.Provider value={value}>
+      <PlayerProgressContext.Provider value={progress}>
+        {children}
+      </PlayerProgressContext.Provider>
     </PlayerContext.Provider>
   );
 };

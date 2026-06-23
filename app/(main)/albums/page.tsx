@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,7 +9,15 @@ import GlassPage from "@/app/components/GlassPage";
 import { useIsMobile } from "@/app/hooks/useIsMobile";
 import { musicLibrary } from "@/app/data/musicLibrary";
 
-const albums = musicLibrary.map(({ id, title, artist, cover }) => ({ id, title, artist, cover }));
+const albums = musicLibrary.map(({ id, title, artist, cover }) => ({
+  id,
+  title,
+  artist,
+  cover,
+  // Предрендеренная размытая обложка (64×64 + blur в sharp) — заменяет CSS blur-3xl в рантайме.
+  // Генерируется один раз скриптом: node scripts/generate-blurred-covers.mjs
+  coverBlur: cover.replace(/\/[^/]+\.jpg$/, "/cover-blur.jpg"),
+}));
 
 const albumVariants = (isMobile: boolean) => ({
   initial: (dir: number) => ({
@@ -70,31 +78,30 @@ export default function AlbumsPage() {
   };
 
   const currentAlbum = albums[currentIndex];
-  const variants = albumVariants(isMobile);
+  const variants = useMemo(() => albumVariants(isMobile), [isMobile]);
 
   return (
     <GlassPage className="relative h-230 flex flex-col items-center justify-center overflow-hidden p-6">
-      {/* Динамический фон по обложке текущего альбома */}
-      <AnimatePresence mode="popLayout">
+      {/* Фон — предрендеренный blur (64×64 JPEG, CSS blur = 0).
+          mode="sync" = кроссфейд: два лёгких слоя одновременно — теперь это почти бесплатно. */}
+      <AnimatePresence mode="sync">
         <motion.div
           key={currentAlbum.id}
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, transition: { duration: 0.6, ease: "easeInOut" } }}
+          exit={{ opacity: 0, transition: { duration: 0.4, ease: "easeInOut" } }}
           className="pointer-events-none absolute inset-0 z-0"
         >
           <Image
-            src={currentAlbum.cover}
+            src={currentAlbum.coverBlur}
             alt=""
             fill
             aria-hidden
-            className="object-cover scale-125 blur-3xl saturate-150"
+            className="object-cover saturate-150"
             sizes="100vw"
             priority
           />
-          {/* Затемняющий слой, чтобы стекло и текст оставались читаемыми */}
-          <div className="absolute inset-0 bg-bg-base/75 backdrop-blur-xl" />
+          <div className="absolute inset-0 bg-bg-base/75" />
         </motion.div>
       </AnimatePresence>
 
