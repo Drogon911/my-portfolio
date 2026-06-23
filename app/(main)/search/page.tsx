@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { musicLibrary } from "@/app/data/musicLibrary";
 import Fuse from "fuse.js";
@@ -40,7 +40,7 @@ const fuse = new Fuse(allTracks, {
   includeScore: true,
 });
 
-export default function SearchPage() {
+function SearchContent() {
   const { currentTrack } = usePlayer();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -184,5 +184,13 @@ export default function SearchPage() {
         </div>
       )}
     </GlassPage>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<GlassPage className="min-h-screen w-full">{null}</GlassPage>}>
+      <SearchContent />
+    </Suspense>
   );
 }
