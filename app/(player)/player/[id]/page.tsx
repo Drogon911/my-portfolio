@@ -158,6 +158,8 @@ export default function PlayerPage() {
     );
   }
 
+  const coverBlur = currentTrack.cover.replace(/\.jpg$/, "-blur.jpg");
+
   return (
     <motion.div
       className="min-h-screen flex flex-col relative overflow-hidden"
@@ -165,18 +167,28 @@ export default function PlayerPage() {
       animate={{ y: isExiting ? "100%" : 0 }}
       transition={{ type: "spring", stiffness: 320, damping: 32 }}
     >
-      {/* Анимированный градиент — замирает на паузе */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(-45deg, #fbcfe8, #db2777, #9333ea, #db2777, #fbcfe8)",
-          backgroundSize: "300% 300%",
-          animation: "gradientFlow 8s ease infinite",
-          animationPlayState: isPlaying ? "running" : "paused",
-        }}
-      />
-      <div className="absolute inset-0 bg-black/25" />
+      {/* Фон — предрендеренный blur обложки трека (64×64 JPEG, растянутый через object-cover).
+          Кроссфейд при смене трека через AnimatePresence mode="sync". */}
+      <AnimatePresence mode="sync">
+        <motion.div
+          key={currentTrack.id}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, transition: { duration: 0.6, ease: "easeInOut" } }}
+          exit={{ opacity: 0, transition: { duration: 0.4, ease: "easeInOut" } }}
+          className="pointer-events-none absolute inset-0 z-0"
+        >
+          <Image
+            src={coverBlur}
+            alt=""
+            fill
+            aria-hidden
+            className="object-cover saturate-150"
+            sizes="100vw"
+            priority
+          />
+          <div className="absolute inset-0 bg-bg-base/80" />
+        </motion.div>
+      </AnimatePresence>
 
       <BackButton onClick={handleBack} />
 
