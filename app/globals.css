@@ -70,7 +70,8 @@ body {
 
 /* Базовые стили для ссылок и кнопок */
 a,
-button {
+button,
+div {
   -webkit-tap-highlight-color: transparent;
 }
 @keyframes gradientFlow {
@@ -87,6 +88,21 @@ button {
   50% {
     transform: scaleY(1);
   }
+}
+
+@keyframes ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0.25;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(5);
+    opacity: 0;
+  }
+}
+
+.ripple-anim {
+  animation: ripple 0.55s ease-out forwards;
 }
 
 .will-change-width {

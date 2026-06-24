@@ -167,10 +167,10 @@ export default function AlbumsPage() {
                   priority
                 />
               </div>
-              <h2 className="text-xl font-semibold text-center mt-4 text-foreground">
+              <h2 className="text-xl font-semibold text-center mt-4 text-foreground line-clamp-2 break-all">
                 {currentAlbum.title}
               </h2>
-              <p className="text-muted text-sm text-center mt-1">{currentAlbum.artist}</p>
+              <p className="text-muted text-sm text-center mt-1 truncate">{currentAlbum.artist}</p>
             </Link>
           </motion.div>
         </AnimatePresence>

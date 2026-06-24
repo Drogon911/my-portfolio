@@ -28,12 +28,11 @@ export default memo(function PlayButton({
   // Трек играет только если это текущий трек И он действительно воспроизводится
   const isTrackPlaying = currentTrack?.id === trackId && isGlobalPlaying;
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (currentTrack?.id === trackId) {
-      // Если тот же трек — переключаем воспроизведение (play/pause)
       togglePlay();
     } else {
-      // Если другой трек — запускаем новый с плейлистом
       playTrack(track, playlistTracks);
     }
   };

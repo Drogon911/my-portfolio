@@ -37,14 +37,14 @@ export default function AlbumPage() {
             priority
           />
         </div>
-        <div className="text-center md:text-left">
+        <div className="text-center md:text-left w-full min-w-0">
           <p className="text-accent text-sm font-semibold uppercase tracking-wider mb-2">
             Альбом
           </p>
-          <h1 className="text-4xl md:text-5xl font-semibold text-foreground tracking-tight mb-2">
+          <h1 className="text-4xl md:text-5xl font-semibold text-foreground tracking-tight mb-2 wrap-break-word">
             {album.title}
           </h1>
-          <p className="text-muted text-lg mb-1">{album.artist}</p>
+          <p className="text-muted text-lg mb-1 truncate">{album.artist}</p>
           <p className="text-subtle text-sm">
             {album.tracks.length} треков
           </p>

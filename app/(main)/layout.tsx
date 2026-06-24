@@ -64,8 +64,8 @@ export default function MainLayout({
                   flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200
                   ${
                     active
-                      ? "bg-white/10 text-accent shadow-sm"
-                      : "text-muted hover:bg-white/5 hover:text-accent"
+                      ? "bg-white/10 text-white shadow-sm"
+                      : "text-muted hover:bg-white/5 hover:text-white"
                   }
                 `}
               >
@@ -82,7 +82,7 @@ export default function MainLayout({
       </aside>
 
       {/* Контент */}
-      <main className="flex-1 ml-0 md:ml-72 p-4 md:p-6 pb-32 md:pb-6">{children}</main>
+      <main className="flex-1 min-w-0 ml-0 md:ml-72 p-4 md:p-6 pb-32 md:pb-6 overflow-x-hidden">{children}</main>
       <MiniPlayer />
       <BottomNav />
     </div>

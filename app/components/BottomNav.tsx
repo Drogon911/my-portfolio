@@ -23,7 +23,7 @@ export default function BottomNav() {
   };
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-bg-base/90 border-t border-white/10 shadow-lg">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-bg-base border-t border-white/10 shadow-lg">
       <div className="flex items-center justify-around px-2 py-2 pb-safe">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -33,10 +33,10 @@ export default function BottomNav() {
               key={item.name}
               href={item.href}
               className={`flex flex-col items-center gap-1 px-3 py-1 rounded-xl transition-all duration-200 cursor-pointer min-w-11 min-h-11 justify-center
-                ${active ? "text-accent" : "text-subtle hover:text-accent"}`}
+                ${active ? "text-white" : "text-muted hover:text-white"}`}
             >
               <Icon size={22} strokeWidth={active ? 2 : 1.5} />
-              <span className={`text-[10px] font-medium ${active ? "text-accent" : "text-subtle"}`}>
+              <span className={`text-[10px] font-medium ${active ? "text-white" : "text-muted"}`}>
                 {item.name}
               </span>
             </Link>
