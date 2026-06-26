@@ -127,17 +127,25 @@ export default function MiniPlayer() {
                 />
               </div>
               <div className="flex-1 min-w-0 flex flex-col items-start">
+                {/* Mobile: plain text, click bubbles to outer div → player */}
+                <span className="md:hidden max-w-full truncate text-sm font-semibold text-foreground">
+                  {currentTrack.title}
+                </span>
+                <span className="md:hidden max-w-full truncate text-xs text-muted">
+                  {currentTrack.artist}
+                </span>
+                {/* Desktop: links to album page */}
                 <Link
                   href={`/album/${currentTrack.albumId}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="inline-block max-w-full truncate text-sm md:text-base font-semibold text-foreground hover:text-accent transition-colors duration-200"
+                  className="hidden md:inline-block max-w-full truncate text-base font-semibold text-foreground hover:text-accent transition-colors duration-200"
                 >
                   {currentTrack.title}
                 </Link>
                 <Link
                   href={`/album/${currentTrack.albumId}`}
                   onClick={(e) => e.stopPropagation()}
-                  className="inline-block max-w-full truncate text-xs md:text-sm text-muted"
+                  className="hidden md:inline-block max-w-full truncate text-sm text-muted"
                 >
                   {currentTrack.artist}
                 </Link>

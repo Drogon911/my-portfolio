@@ -98,7 +98,7 @@ export default function AlbumsPage() {
             fill
             aria-hidden
             className="object-cover saturate-150"
-            sizes="100vw"
+            sizes="(max-width: 768px) 100vw, calc(100vw - 288px)"
             priority
           />
           <div className="absolute inset-0 bg-bg-base/75" />

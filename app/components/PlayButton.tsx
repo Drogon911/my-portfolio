@@ -71,7 +71,7 @@ export default memo(function PlayButton({
         onClick={handleClick}
         className="flex items-center justify-center w-8 h-8 rounded-full bg-black/50 shadow-md hover:bg-accent/40 hover:scale-105 transition-all duration-200"
       >
-        <Play className="w-4 h-4 fill-accent text-accent transition-transform duration-200 group-hover:scale-105" />
+        <Play className="w-4 h-4 fill-white text-white transition-transform duration-200 group-hover:scale-105" />
       </button>
     );
   }
@@ -82,7 +82,7 @@ export default memo(function PlayButton({
       onClick={handleClick}
       className="flex items-center justify-center w-10 h-10 rounded-full bg-white/8 border border-accent/20 shadow-md hover:bg-accent/20 hover:scale-105 transition-all duration-200 group"
     >
-      <Play className="w-4 h-4 fill-accent text-accent transition-transform group-hover:scale-105" />
+      <Play className="w-4 h-4 fill-white text-white transition-transform group-hover:scale-105" />
     </button>
   );
 });
