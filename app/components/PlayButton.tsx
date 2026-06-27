@@ -2,7 +2,7 @@
 
 import { memo } from "react";
 import { usePlayer } from "@/app/contexts/PlayerContext";
-import type { Track } from "@/app/data/musicLibrary";
+import type { Track } from "@/app/lib/db/types";
 import { Play } from "lucide-react";
 
 interface PlayButtonProps {

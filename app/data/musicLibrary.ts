@@ -1,21 +1,12 @@
 // app/data/musicLibrary.ts
+//
+// Статический каталог. Уже перенесён в Supabase и используется только
+// seed-генератором (scripts/generate-seed-sql.mjs) — компоненты читают
+// данные через слой app/lib/db/catalog.ts. Типы живут в app/lib/db/types.ts.
 
-export type Track = {
-  id: number;
-  title: string;
-  artist: string;
-  src: string;
-  cover: string;
-  albumId: number;
-};
+import type { Album } from "@/app/lib/db/types";
 
-export type Album = {
-  id: number;
-  title: string;
-  artist: string;
-  cover: string;
-  tracks: Track[];
-};
+export type { Album, Track } from "@/app/lib/db/types";
 
 export const musicLibrary: Album[] = [
   // 1. Альбом 1 (6 песен)

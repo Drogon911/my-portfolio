@@ -4,7 +4,7 @@ import { memo, useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import PlayButton from "./PlayButton";
 import { usePlayer } from "@/app/contexts/PlayerContext";
-import type { Track } from "@/app/data/musicLibrary";
+import type { Track } from "@/app/lib/db/types";
 
 interface TrackRowProps {
   track: Track;

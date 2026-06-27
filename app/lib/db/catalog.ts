@@ -1,5 +1,9 @@
+import { cache } from "react";
 import { supabase } from "@/app/lib/supabase/client";
-import type { Album, Track } from "@/app/data/musicLibrary";
+import type { Album, Track } from "@/app/lib/db/types";
+
+// Плоский трек с названием альбома — форма, нужная нечёткому поиску.
+export type SearchTrack = Track & { albumTitle: string };
 
 // Слой доступа к каталогу — «шов» между БД и UI.
 // Возвращает те же формы Album / Track, что компоненты потребляют сейчас,
@@ -62,9 +66,11 @@ function toAlbum(row: ReleaseRow): Album {
 }
 
 // ── Публичный API слоя ────────────────────────────────────────
+// Функции обёрнуты в React cache() — повторные вызовы в рамках одного
+// серверного рендера дедуплицируются (одна и та же выборка не бьёт в БД дважды).
 
 /** Все релизы с треками, отсортированные по legacy_id. */
-export async function getAlbums(): Promise<Album[]> {
+export const getAlbums = cache(async (): Promise<Album[]> => {
   const { data, error } = await supabase
     .from("releases")
     .select(RELEASE_SELECT)
@@ -72,10 +78,18 @@ export async function getAlbums(): Promise<Album[]> {
 
   if (error) throw new Error(`getAlbums: ${error.message}`);
   return (data as unknown as ReleaseRow[]).map(toAlbum);
-}
+});
+
+/** Плоский список всех треков с названием альбома — для нечёткого поиска. */
+export const getAllTracks = cache(async (): Promise<SearchTrack[]> => {
+  const albums = await getAlbums();
+  return albums.flatMap((album) =>
+    album.tracks.map((track) => ({ ...track, albumTitle: album.title })),
+  );
+});
 
 /** Один релиз по публичному id (legacy_id) или null, если не найден. */
-export async function getAlbum(id: number): Promise<Album | null> {
+export const getAlbum = cache(async (id: number): Promise<Album | null> => {
   const { data, error } = await supabase
     .from("releases")
     .select(RELEASE_SELECT)
@@ -84,10 +98,10 @@ export async function getAlbum(id: number): Promise<Album | null> {
 
   if (error) throw new Error(`getAlbum(${id}): ${error.message}`);
   return data ? toAlbum(data as unknown as ReleaseRow) : null;
-}
+});
 
 /** Один трек по публичному id (legacy_id) или null, если не найден. */
-export async function getTrack(id: number): Promise<Track | null> {
+export const getTrack = cache(async (id: number): Promise<Track | null> => {
   const { data, error } = await supabase
     .from("tracks")
     .select(
@@ -109,4 +123,4 @@ export async function getTrack(id: number): Promise<Track | null> {
     row.releases.artists?.name ?? "",
     row.releases.cover_url,
   );
-}
+});

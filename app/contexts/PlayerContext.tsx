@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useRef, useState, useEffect, ReactNode, useCallback, useMemo } from "react";
-import type { Track } from "@/app/data/musicLibrary";
+import type { Track } from "@/app/lib/db/types";
 
 type PlayerContextType = {
   currentTrack: Track | null;
