@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Library, Disc, Heart } from "lucide-react";
+import { Home, Library, Disc, Heart, User } from "lucide-react";
 
 const navItems = [
   { name: "Главная", href: "/", icon: Home },
   { name: "Плейлисты", href: "/playlists", icon: Library, activePatterns: ["/playlist/"] },
   { name: "Альбомы", href: "/albums", icon: Disc, activePatterns: ["/album/"] },
   { name: "Избранное", href: "/favorites", icon: Heart },
+  { name: "Профиль", href: "/account", icon: User },
 ];
 
 export default function BottomNav() {

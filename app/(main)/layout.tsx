@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Home, Library, Disc, Heart, Search } from "lucide-react";
 import MiniPlayer from "@/app/components/MiniPlayer";
 import BottomNav from "@/app/components/BottomNav";
+import SidebarAccount from "@/app/components/SidebarAccount";
 
 const navItems = [
   { name: "Поиск", href: "/search", icon: Search },
@@ -79,6 +80,9 @@ export default function MainLayout({
             );
           })}
         </nav>
+
+        {/* Профиль / вход — низ сайдбара */}
+        <SidebarAccount />
       </aside>
 
       {/* Контент */}
