@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Play, Pause, SkipBack, SkipForward } from "lucide-react";
 import { useRef, useCallback, useState } from "react";
 import VolumeIcon from "@/app/components/VolumeIcon";
+import FavoriteButton from "@/app/components/FavoriteButton";
 import { formatTime } from "@/app/utils/formatTime";
 
 // Изолированная полоса прогресса: только она подписана на 60fps-обновления прогресса,
@@ -187,8 +188,9 @@ export default function MiniPlayer() {
               </button>
             </div>
 
-            {/* Правая колонка - громкость (только десктоп) */}
+            {/* Правая колонка - избранное + громкость (только десктоп) */}
             <div className="hidden md:flex items-center justify-end gap-3 min-w-35">
+              <FavoriteButton trackId={currentTrack.id} size={24} className="p-2" />
               <button
                 onClick={(e) => {
                   e.stopPropagation();

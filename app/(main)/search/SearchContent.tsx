@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
 import PlayButton from "@/app/components/PlayButton";
+import FavoriteButton from "@/app/components/FavoriteButton";
 import { usePlayer } from "@/app/contexts/PlayerContext";
 import GlassPage from "@/app/components/GlassPage";
 import type { SearchTrack } from "@/app/lib/db/catalog";
@@ -35,15 +36,6 @@ export default function SearchContent({
         distance: 100,
         includeScore: true,
       }),
-    [allTracks],
-  );
-
-  const playlistByAlbumId = useMemo(
-    () =>
-      allTracks.reduce<Record<number, SearchTrack[]>>((acc, track) => {
-        (acc[track.albumId] ??= []).push(track);
-        return acc;
-      }, {}),
     [allTracks],
   );
 
@@ -147,7 +139,7 @@ export default function SearchContent({
                         <PlayButton
                           trackId={track.id}
                           track={track}
-                          playlistTracks={playlistByAlbumId[track.albumId]}
+                          playlistTracks={results}
                           isCompact
                         />
                       </div>
@@ -165,6 +157,7 @@ export default function SearchContent({
                         </p>
                       </Link>
                     </div>
+                    <FavoriteButton trackId={track.id} className="shrink-0 p-2" />
                   </div>
                 );
               })}

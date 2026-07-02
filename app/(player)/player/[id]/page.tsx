@@ -10,6 +10,7 @@ import { useIsMobile } from "@/app/hooks/useIsMobile";
 import { usePlayer, usePlayerProgress } from "@/app/contexts/PlayerContext";
 import VolumeIcon from "@/app/components/VolumeIcon";
 import BackButton from "@/app/components/BackButton";
+import FavoriteButton from "@/app/components/FavoriteButton";
 import { formatTime } from "@/app/utils/formatTime";
 
 // Изолированная полоса прогресса — только она подписана на 60fps-обновления,
@@ -76,7 +77,9 @@ function PlayerProgressBar({
         </div>
         <div
           className="absolute w-5 h-5 bg-white rounded-full top-1/2 -translate-y-1/2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
-          style={{ left: `clamp(0px, calc(${progressPercent}% - 10px), calc(100% - 20px))` }}
+          style={{
+            left: `clamp(0px, calc(${progressPercent}% - 10px), calc(100% - 20px))`,
+          }}
         />
       </div>
       <div className="flex justify-between text-sm text-white/80 mt-3 font-medium">
@@ -88,7 +91,6 @@ function PlayerProgressBar({
 }
 
 export default function PlayerPage() {
-
   const isMobile = useIsMobile();
   const volumeBarRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -173,8 +175,14 @@ export default function PlayerPage() {
         <motion.div
           key={currentTrack.id}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1, transition: { duration: 0.6, ease: "easeInOut" } }}
-          exit={{ opacity: 0, transition: { duration: 0.4, ease: "easeInOut" } }}
+          animate={{
+            opacity: 1,
+            transition: { duration: 0.6, ease: "easeInOut" },
+          }}
+          exit={{
+            opacity: 0,
+            transition: { duration: 0.4, ease: "easeInOut" },
+          }}
           className="pointer-events-none absolute inset-0 z-0"
         >
           <Image
@@ -193,7 +201,7 @@ export default function PlayerPage() {
       <BackButton onClick={handleBack} />
 
       <div className="relative z-10 flex-1 flex flex-col">
-        <div className="flex-1 flex flex-col items-center justify-center p-6">
+        <div className="relative flex-1 flex flex-col items-center justify-center p-6">
           <AnimatePresence mode="wait">
             {isMobile ? (
               <motion.div
@@ -272,6 +280,17 @@ export default function PlayerPage() {
           <p className="text-pink-100 mt-2 text-center drop-shadow">
             {currentTrack.artist}
           </p>
+          {/* Избранное — absolute внизу по центру верхней зоны: вне потока,
+              поэтому обложка и название остаются строго на своих местах. */}
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2">
+            <FavoriteButton
+              trackId={currentTrack.id}
+              size={28}
+              className="w-14 h-14 bg-white/15 hover:bg-white/25 shadow-md"
+              activeClass="fill-white text-white"
+              idleClass="text-white/80 hover:text-white transition-colors"
+            />
+          </div>
         </div>
 
         <div className="w-full bg-white/20 border-t border-white/30 shadow-2xl rounded-t-3xl p-6 pb-8">

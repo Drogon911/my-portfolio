@@ -3,6 +3,7 @@
 import { memo, useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import PlayButton from "./PlayButton";
+import FavoriteButton from "./FavoriteButton";
 import { usePlayer } from "@/app/contexts/PlayerContext";
 import type { Track } from "@/app/lib/db/types";
 
@@ -49,7 +50,9 @@ export default memo(function TrackRow({
     }
   };
 
-  const baseRowClasses = `relative group flex md:grid md:grid-cols-12 gap-3 md:gap-4 items-center px-4 md:px-5 py-3 rounded-xl transition-all duration-200 border cursor-pointer overflow-hidden
+  // База — flex; album-вариант добавляет md:grid для выравнивания колонок #/название/действие.
+  // playlist-вариант остаётся на flex, чтобы обложка была вплотную к тексту на любой ширине.
+  const baseRowClasses = `relative group flex gap-3 md:gap-4 items-center px-4 md:px-5 py-3 rounded-xl transition-all duration-200 border cursor-pointer overflow-hidden
     ${
       isPlaying
         ? "bg-accent/10 border-accent/20"
@@ -72,7 +75,7 @@ export default memo(function TrackRow({
         : "hidden md:group-hover:block";
 
     return (
-      <div className={baseRowClasses} onClick={handleRowClick}>
+      <div className={`${baseRowClasses} md:grid md:grid-cols-12`} onClick={handleRowClick}>
         {rippleNodes}
         <div className="shrink-0 md:col-span-1 flex items-center justify-start w-8 md:w-auto">
           {!isPlaying && (
@@ -88,11 +91,14 @@ export default memo(function TrackRow({
             />
           </div>
         </div>
-        <div className="flex-1 min-w-0 md:col-span-11">
+        <div className="flex-1 min-w-0 md:col-span-10">
           <p className={`font-medium truncate ${isPlaying ? "text-accent" : "text-foreground"}`}>
             {track.title}
           </p>
           <p className="text-sm text-muted truncate">{track.artist}</p>
+        </div>
+        <div className="shrink-0 md:col-span-1 flex justify-end">
+          <FavoriteButton trackId={track.id} className="p-2" />
         </div>
       </div>
     );
@@ -108,7 +114,7 @@ export default memo(function TrackRow({
   return (
     <div className={baseRowClasses} onClick={handleRowClick}>
       {rippleNodes}
-      <div className="shrink-0 md:col-span-1 flex items-center justify-start">
+      <div className="shrink-0 flex items-center justify-start">
         <div className="relative w-12 h-12 rounded-lg overflow-hidden shadow-md shrink-0">
           <Image
             src={track.cover}
@@ -127,11 +133,14 @@ export default memo(function TrackRow({
           </div>
         </div>
       </div>
-      <div className="flex-1 min-w-0 md:col-span-11">
+      <div className="flex-1 min-w-0">
         <p className={`font-medium truncate ${isPlaying ? "text-accent" : "text-foreground"}`}>
           {track.title}
         </p>
         <p className="text-sm text-muted truncate">{track.artist}</p>
+      </div>
+      <div className="shrink-0 flex justify-end">
+        <FavoriteButton trackId={track.id} className="p-2" />
       </div>
     </div>
   );

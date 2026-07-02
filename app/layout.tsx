@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { PlayerProvider } from "./contexts/PlayerContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import { FavoritesProvider } from "./contexts/FavoritesContext";
 
 export const metadata: Metadata = {
   title: "Музыкальный сервис",
@@ -17,7 +18,9 @@ export default function RootLayout({
     <html lang="ru">
       <body className="antialiased">
         <AuthProvider>
-          <PlayerProvider>{children}</PlayerProvider>
+          <FavoritesProvider>
+            <PlayerProvider>{children}</PlayerProvider>
+          </FavoritesProvider>
         </AuthProvider>
       </body>
     </html>
