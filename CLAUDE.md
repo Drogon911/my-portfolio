@@ -40,9 +40,13 @@ npm run lint     # Запустить ESLint
 
 ### Данные
 
-Все музыкальные данные хранятся в `app/data/musicLibrary.ts` как статический массив `musicLibrary: Album[]`. Бэкенда нет — добавить трек = отредактировать этот файл и положить `.mp3` в `public/albums/album-N/`.
+Каталог хранится в **Supabase** (PostgreSQL) и читается через слой `app/lib/db/catalog.ts` (`getAlbums` / `getAlbum` / `getTrack` / `getAllTracks`, обёрнуты в React `cache()`). Слой возвращает те же формы `Album` / `Track`, что и раньше — типы вынесены в `app/lib/db/types.ts`.
 
-`id` треков не последовательны между альбомами (альбом 1: 1–6, альбом 2: 101–111, альбом 3: 201–213 и т.д.) — это сделано намеренно для глобальной уникальности ID.
+`app/data/musicLibrary.ts` больше **не** источник данных для UI — он остался только сид-источником для `scripts/generate-seed-sql.mjs`. `.mp3` и обложки пока лежат в `public/albums/album-N/` (перенос в Supabase Storage — на будущее).
+
+**`legacy_id`** — старый числовой id трека/релиза из `musicLibrary` (треки: альбом 1 → 1–6, альбом 2 → 101–111 и т.д.; намеренно не последовательны). В БД это отдельная колонка, и слой отдаёт его как публичный `id`, поэтому маршруты `/album/[id]`, `/player/[id]` не менялись при переходе на БД. Внутренний `tracks.id` (bigint identity) используется только во внутренних связях (напр. `favorite_tracks`).
+
+Страницы каталога устроены как **server-компонент** (грузит данные через слой) + клиентский `*View`/`*Content` (UI): `album/[id]` → `AlbumView`, `playlist/[id]` → `PlaylistView`, `albums` → `AlbumsCarousel`, `search` → `SearchContent`.
 
 ### Ключевые компоненты
 
@@ -58,7 +62,7 @@ npm run lint     # Запустить ESLint
 
 ### Поиск
 
-`/search` использует [Fuse.js](https://fusejs.io/) для клиентского нечёткого поиска по полям title, artist и название альбома. Экземпляр `fuse` создаётся один раз на уровне модуля (не внутри компонента) на основе плоского массива `allTracks` из `musicLibrary`.
+`/search` использует [Fuse.js](https://fusejs.io/) для клиентского нечёткого поиска по полям title, artist и название альбома. Server-страница грузит плоский `allTracks` через `getAllTracks()` и передаёт в клиентский `SearchContent`, где `fuse` создаётся через `useMemo([allTracks])` (стабильная ссылка — `React.memo` у `PlayButton` не ломается). Очередь воспроизведения из поиска = текущие результаты.
 
 ### Производительность
 
@@ -110,10 +114,31 @@ Tailwind CSS v4 с `@tailwindcss/postcss`. Анимации — Framer Motion (`
 - `font-bold` (700) — кнопки, CTA-элементы
 - Минимум `text-sm` (14px) для любого читаемого текста
 
+## Бэкенд (Supabase)
+
+Бэкенд — **Supabase** (PostgreSQL + Auth). Задеплоено на Vercel (авто-деплой с GitHub, ветка `main`).
+
+**Клиенты** (`app/lib/supabase/`):
+- `client.ts` — анонимный `createClient`, для публичного чтения каталога в server-компонентах (без cookies → статика `/albums`, `/search` сохраняется).
+- `browser.ts` — `createBrowserClient` (@supabase/ssr) для client-компонентов: вход/выход, `onAuthStateChange`.
+- `server.ts` — `createServerClient` с `cookies()` для server-компонентов/роутов.
+- `middleware.ts` — `updateSession` (рефреш сессии); вызывается из корневого `proxy.ts` (в Next 16 конвенция `middleware` переименована в `proxy`).
+
+**Схема БД** — миграции в `supabase/migrations/` (применяются вручную через Supabase SQL Editor):
+- `0001` — каталог: `profiles` (1:1 с `auth.users`), `artists`, `releases`, `tracks`, `comments` + триггеры (`updated_at`, `handle_new_user`) и RLS.
+- `0002` — соц: `favorite_tracks`, `playlists`, `playlist_tracks`, `plays` + RLS.
+- `0003` — `WITH CHECK` в UPDATE-политиках (нельзя переписать владельца/автора).
+- `0004` — профиль заполняется именем/аватаром из Google-метаданных.
+- `0005` — RPC `toggle_favorite(legacy_id)` (маппинг publiс id → внутренний, под RLS).
+- Сид каталога: `supabase/seed.sql` (генерируется `scripts/generate-seed-sql.mjs` из `musicLibrary.ts`).
+
+**Ключи** — в `.env.local` только публичные `NEXT_PUBLIC_SUPABASE_URL` / `ANON_KEY` (тот же набор в Vercel env). `service_role` не используется. `.env.local` в `.gitignore`, `.env.example` — шаблон.
+
+**Авторизация** — только Google OAuth. Поток: кнопка → `signInWithOAuth` → `app/auth/callback` (обмен кода на сессию) → `proxy` рефрешит. Состояние сессии — `AuthContext` (`useAuth`). UI: профиль в сайдбаре (`SidebarAccount`), `/account`, пункт в `BottomNav`. Для OAuth первый вход = регистрация.
+
+**Избранное** — `FavoritesContext` (`useFavorites`) держит `Set` избранных legacy-id с оптимистичным `toggle` через RPC. Кнопка `FavoriteButton` (гость → ведёт на `/account`). Страница `/favorites` — server-компонент из БД.
+
 ## Роадмап
 
-Текущая фаза — доводка существующего фронтенда до продакшн-качества. Следующая фаза — интеграция бэкенда:
-
-- **Бэкенд:** Supabase или Yandex Cloud (пока не решено)
-- Статический слой `musicLibrary.ts` заменится реальными API-вызовами
-- Аккаунты пользователей, избранное и плейлисты будут храниться в базе данных
+- **Сделано:** каталог из Supabase, авторизация Google, избранное.
+- **Дальше:** плейлисты (таблицы готовы, но пусты), опционально — регистрация по email/паролю, перенос `.mp3`/обложек в Supabase Storage, статистика прослушиваний (`plays`).
