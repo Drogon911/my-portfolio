@@ -36,6 +36,10 @@ function slugify(name) {
 // Экранирование строки для SQL-литерала ('' вместо ').
 const q = (s) => `'${String(s).replace(/'/g, "''")}'`;
 
+// То же, но для пути к файлу в Storage: снимаем ведущий '/' — в БД путь
+// хранится относительным (albums/album-N/..), URL строит app/lib/storage.ts.
+const qp = (s) => q(String(s).replace(/^\/+/, ""));
+
 // ── Уникальные исполнители ────────────────────────────────────
 const artistSlugs = new Map(); // name → slug
 for (const album of musicLibrary) {
@@ -68,7 +72,7 @@ lines.push(
   musicLibrary
     .map((album) => {
       const slug = artistSlugs.get(album.artist);
-      return `  ((select id from public.artists where slug = ${q(slug)}), ${q(album.title)}, 'album', ${q(album.cover)}, ${album.id})`;
+      return `  ((select id from public.artists where slug = ${q(slug)}), ${q(album.title)}, 'album', ${qp(album.cover)}, ${album.id})`;
     })
     .join(",\n") + "\non conflict (legacy_id) do nothing;",
 );
@@ -83,7 +87,7 @@ const trackRows = [];
 for (const album of musicLibrary) {
   album.tracks.forEach((track, i) => {
     trackRows.push(
-      `  ((select id from public.releases where legacy_id = ${album.id}), ${q(track.title)}, ${q(track.src)}, ${q(track.cover)}, ${i + 1}, ${track.id})`,
+      `  ((select id from public.releases where legacy_id = ${album.id}), ${q(track.title)}, ${qp(track.src)}, ${qp(track.cover)}, ${i + 1}, ${track.id})`,
     );
   });
 }

@@ -42,7 +42,12 @@ npm run lint     # Запустить ESLint
 
 Каталог хранится в **Supabase** (PostgreSQL) и читается через слой `app/lib/db/catalog.ts` (`getAlbums` / `getAlbum` / `getTrack` / `getAllTracks`, обёрнуты в React `cache()`). Слой возвращает те же формы `Album` / `Track`, что и раньше — типы вынесены в `app/lib/db/types.ts`.
 
-`app/data/musicLibrary.ts` больше **не** источник данных для UI — он остался только сид-источником для `scripts/generate-seed-sql.mjs`. `.mp3` и обложки пока лежат в `public/albums/album-N/` (перенос в Supabase Storage — на будущее).
+`app/data/musicLibrary.ts` больше **не** источник данных для UI — он остался только сид-источником для `scripts/generate-seed-sql.mjs`.
+
+**Файлы (`.mp3` + обложки) — в Supabase Storage**, public bucket `media`, структура `albums/album-N/...`. В БД (`tracks.audio_url`, `tracks.cover_url`, `releases.cover_url`) хранится **относительный путь** без ведущего `/` (напр. `albums/album-1/track-1.mp3`), а публичный URL собирает единственный helper `storageUrl()` из `app/lib/storage.ts`. Домен не размазан по данным → будущий переход на signed URL меняет только helper.
+
+- Заливка каталога в Storage: `node --env-file=.env.local scripts/upload-to-storage.mjs` (создаёт bucket + льёт `public/albums`, если он есть; требует `SUPABASE_SERVICE_ROLE_KEY` **только** локально). Структуру путей менять нельзя — от неё зависит blur-логика (см. ниже).
+- Доступ пока **public** (прямые CDN-ссылки, статика `/albums`/`/search` сохраняется). Signed URL — в роадмапе.
 
 **`legacy_id`** — старый числовой id трека/релиза из `musicLibrary` (треки: альбом 1 → 1–6, альбом 2 → 101–111 и т.д.; намеренно не последовательны). В БД это отдельная колонка, и слой отдаёт его как публичный `id`, поэтому маршруты `/album/[id]`, `/player/[id]` не менялись при переходе на БД. Внутренний `tracks.id` (bigint identity) используется только во внутренних связях (напр. `favorite_tracks`).
 
@@ -72,11 +77,9 @@ npm run lint     # Запустить ESLint
 
 **`backdrop-blur` намеренно убран** везде, кроме `MiniPlayer` и кнопок навигации на `/albums` — тяжёл для мобильного GPU, бессмысленен над сплошным фоном.
 
-**CSS `filter: blur()` в рантайме — запрещён для фонов.** Вместо этого используем предрендеренные размытые обложки:
-- Скрипт: `node scripts/generate-blurred-covers.mjs` (sharp, устанавливается один раз)
-- Генерирует `cover-blur.jpg` (64×64px) рядом с каждой обложкой альбома в `public/albums/album-N/`
-- При добавлении нового альбома — запустить скрипт повторно
-- Почему: CSS `blur-3xl` на полном экране ≈ 64 млн операций/кадр, предрендер ≈ 330 тыс (в ~200 раз дешевле)
+**CSS `filter: blur()` в рантайме — запрещён для фонов.** Вместо этого используем предрендеренные размытые обложки (`cover-blur.jpg` / `<имя>-blur.jpg`, 64×64px), лежащие в Storage рядом с оригиналами. Путь к blur вычисляется в компонентах **строковой заменой** из готового URL обложки (напр. `cover.replace(/\.jpg$/, "-blur.jpg")` в `/player`, `.../cover-blur.jpg` на `/albums`) — поэтому структуру путей в bucket менять нельзя.
+- Почему предрендер: CSS `blur-3xl` на полном экране ≈ 64 млн операций/кадр, предрендер ≈ 330 тыс (в ~200 раз дешевле)
+- `scripts/generate-blurred-covers.mjs` (sharp) генерировал blur из локального `public/albums`; после переноса в Storage он неактуален — генерация blur переедет в пайплайн загрузки будущей **админки** (sharp → заливка `-blur.jpg` в Storage).
 
 **`React.memo`** на `TrackRow` и `PlayButton` — при смене трека перерисовывается только затронутая строка. Стабильные ссылки на массивы плейлистов обязательны: `playlistByAlbumId` вычисляется на уровне модуля в `/search`, иначе `memo` ломается.
 
@@ -163,15 +166,18 @@ Tailwind CSS v4 с `@tailwindcss/postcss`. Анимации — Framer Motion (`
 - `0003` — `WITH CHECK` в UPDATE-политиках (нельзя переписать владельца/автора).
 - `0004` — профиль заполняется именем/аватаром из Google-метаданных.
 - `0005` — RPC `toggle_favorite(legacy_id)` (маппинг publiс id → внутренний, под RLS).
+- `0006` — переход на Storage: `ltrim` ведущего `/` у `audio_url`/`cover_url` (путь стал относительным).
 - Сид каталога: `supabase/seed.sql` (генерируется `scripts/generate-seed-sql.mjs` из `musicLibrary.ts`).
 
-**Ключи** — в `.env.local` только публичные `NEXT_PUBLIC_SUPABASE_URL` / `ANON_KEY` (тот же набор в Vercel env). `service_role` не используется. `.env.local` в `.gitignore`, `.env.example` — шаблон.
+**Storage** — public bucket `media` (файлы каталога, см. раздел «Данные»). Заливка: `scripts/upload-to-storage.mjs`.
+
+**Ключи** — в `.env.local` публичные `NEXT_PUBLIC_SUPABASE_URL` / `ANON_KEY` (тот же набор в Vercel env). `SUPABASE_SERVICE_ROLE_KEY` — секрет, **только локально** и **только** для скрипта заливки в Storage (в рантайме приложения не используется, в браузер/`NEXT_PUBLIC` не попадает). `.env.local` в `.gitignore`, `.env.example` — шаблон.
 
 **Авторизация** — только Google OAuth. Поток: кнопка → `signInWithOAuth` → `app/auth/callback` (обмен кода на сессию) → `proxy` рефрешит. Состояние сессии — `AuthContext` (`useAuth`). UI: профиль в сайдбаре (`SidebarAccount`), `/account`, пункт в `BottomNav`. Для OAuth первый вход = регистрация.
 
-**Избранное** — `FavoritesContext` (`useFavorites`) держит `Set` избранных legacy-id с оптимистичным `toggle` через RPC. Кнопка `FavoriteButton` (гость → ведёт на `/account`). Страница `/favorites` — server-компонент из БД.
+**Избранное** — внешний стор в `FavoritesContext` на `useSyncExternalStore`: держит `Set` избранных legacy-id, каждая `FavoriteButton` подписана на **свой** boolean (`useIsFavorite(id)`), поэтому лайк перерисовывает только свою кнопку, а не все сразу. Экшены — `useFavoritesActions()` (`toggle`, `ready`), оптимистично + RPC `toggle_favorite`. `FavoritesProvider` синхронизирует стор с auth. Кнопка `FavoriteButton` (гость → ведёт на `/account`). Страница `/favorites` — server-компонент из БД.
 
 ## Роадмап
 
-- **Сделано:** каталог из Supabase, авторизация Google, избранное.
-- **Дальше:** плейлисты (таблицы готовы, но пусты), опционально — регистрация по email/паролю, перенос `.mp3`/обложек в Supabase Storage, статистика прослушиваний (`plays`).
+- **Сделано:** каталог из Supabase, авторизация Google, избранное, перенос `.mp3`/обложек в Supabase Storage.
+- **Дальше:** админка загрузки треков (заливка в Storage + генерация blur), плейлисты (таблицы готовы, но пусты), опционально — регистрация по email/паролю, статистика прослушиваний (`plays`), переход Storage на signed URL.

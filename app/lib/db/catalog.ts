@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { supabase } from "@/app/lib/supabase/client";
+import { storageUrl } from "@/app/lib/storage";
 import type { Album, Track } from "@/app/lib/db/types";
 
 // Плоский трек с названием альбома — форма, нужная нечёткому поиску.
@@ -39,13 +40,14 @@ function toTrack(
   artist: string,
   releaseCover: string | null,
 ): Track {
+  // cover_url трека опционален — если пусто, берём обложку релиза.
+  const coverPath = row.cover_url ?? releaseCover;
   return {
     id: row.legacy_id,
     title: row.title,
     artist,
-    src: row.audio_url,
-    // cover_url трека опционален — если пусто, берём обложку релиза.
-    cover: row.cover_url ?? releaseCover ?? "",
+    src: storageUrl(row.audio_url),
+    cover: coverPath ? storageUrl(coverPath) : "",
     albumId,
   };
 }
@@ -60,7 +62,7 @@ function toAlbum(row: ReleaseRow): Album {
     id: row.legacy_id,
     title: row.title,
     artist,
-    cover: row.cover_url ?? "",
+    cover: row.cover_url ? storageUrl(row.cover_url) : "",
     tracks,
   };
 }

@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Track } from "@/app/lib/db/types";
+import { storageUrl } from "@/app/lib/storage";
 
 // Слой избранного. Функции принимают клиент параметром, чтобы работать и на
 // сервере (страница /favorites), и в браузере (FavoritesContext).
@@ -50,13 +51,16 @@ export async function getFavoriteTracks(
   return (data as unknown as FavRow[])
     .map((r) => r.tracks)
     .filter((t): t is NonNullable<FavRow["tracks"]> => t != null)
-    .map((t) => ({
-      id: t.legacy_id,
-      title: t.title,
-      artist: t.releases?.artists?.name ?? "",
-      src: t.audio_url,
+    .map((t) => {
       // cover_url трека опционален — иначе берём обложку релиза.
-      cover: t.cover_url ?? t.releases?.cover_url ?? "",
-      albumId: t.releases?.legacy_id ?? 0,
-    }));
+      const coverPath = t.cover_url ?? t.releases?.cover_url;
+      return {
+        id: t.legacy_id,
+        title: t.title,
+        artist: t.releases?.artists?.name ?? "",
+        src: storageUrl(t.audio_url),
+        cover: coverPath ? storageUrl(coverPath) : "",
+        albumId: t.releases?.legacy_id ?? 0,
+      };
+    });
 }
