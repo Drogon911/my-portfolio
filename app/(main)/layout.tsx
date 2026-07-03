@@ -50,7 +50,7 @@ export default function MainLayout({
           <span className={`${logoFont.className} text-5xl font-bold tracking-wide text-accent transition-all duration-500 group-hover:scale-105 group-hover:text-accent-hover`}>
             DEMO
           </span>
-          <p className="text-[11px] font-medium text-pink-400/80 tracking-wider mt-1 ml-0.5">
+          <p className="text-[11px] font-medium text-accent tracking-wider mt-1 ml-0.5">
             music streaming
           </p>
         </Link>

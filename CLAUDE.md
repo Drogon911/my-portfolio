@@ -86,26 +86,26 @@ npm run lint     # Запустить ESLint
 
 Tailwind CSS v4 с `@tailwindcss/postcss`. Анимации — Framer Motion (`framer-motion`).
 
-**Тема: только тёмная.** Глубокий почти-чёрный фон (`#0a0a0f`) с розово-неоновым акцентом (`pink-500`/`pink-400`). Светлой темы и переключателя нет.
+**Тема: только тёмная.** Тёплый почти-чёрный фон (`#0e0c0a`, без синевы) с розовым акцентом. Светлой темы и переключателя нет.
 
-**Цветовые токены** объявлены в `:root` и доступны как Tailwind-утилиты через `@theme inline` в `globals.css`:
+**Цветовые токены** объявлены в `:root` и доступны как Tailwind-утилиты через `@theme inline` в `globals.css`. Палитра **тёплая** (тёплый чёрный, серо-бежевые поверхности, розовый только как акцент):
 
 | Токен CSS                | Tailwind-класс    | Назначение                        |
 |--------------------------|-------------------|-----------------------------------|
-| `--color-bg-base`        | `bg-bg-base`      | Фон приложения (`#0a0a0f`)        |
-| `--color-surface`        | `bg-surface`      | Базовая карточка (`#16131d`)      |
-| `--color-surface-2`      | `bg-surface-2`    | Приподнятая поверхность (`#211c2c`) |
-| `--color-foreground`     | `text-foreground` | Основной текст (`#f4f4f5`)        |
-| `--color-muted`          | `text-muted`      | Вторичный текст (`#a1a1aa`)       |
-| `--color-subtle`         | `text-subtle`     | Третичный текст (`#71717a`)       |
-| `--color-accent`         | `text-accent` / `bg-accent` | Розовый неон (`#ec4899`) |
-| `--color-accent-hover`   | `text-accent-hover` / `bg-accent-hover` | Светлее при ховере (`#f472b6`) |
+| `--color-bg-base`        | `bg-bg-base`      | Фон приложения (`#0e0c0a`)        |
+| `--color-surface`        | `bg-surface`      | Базовая карточка (`#1c1a18`)      |
+| `--color-surface-2`      | `bg-surface-2`    | Приподнятая поверхность (`#272422`) |
+| `--color-foreground`     | `text-foreground` | Основной текст (`#ffffff`)        |
+| `--color-muted`          | `text-muted`      | Вторичный текст — тёплый серый (`#a09890`) |
+| `--color-subtle`         | `text-subtle`     | Третичный текст (`#665e58`)       |
+| `--color-accent`         | `text-accent` / `bg-accent` | Розовый акцент (`#e91e8c`) |
+| `--color-accent-hover`   | `text-accent-hover` / `bg-accent-hover` | Светлее при ховере (`#f06aac`) |
 
 **Правила использования цветов:**
 - Текст: `text-foreground` (основной), `text-muted` (вторичный), `text-subtle` (третичный). Никогда не использовать `text-gray-700/800/900` — на тёмном фоне невидимо.
 - Акцент: `text-accent` / `bg-accent`. При ховере на тёмном фоне цвет идёт **светлее** (`bg-accent` → `bg-accent-hover`), а не темнее.
 - Стеклянные поверхности: `bg-white/5 + border border-white/10` (см. `GlassPage`). `.glass-surface` добавляет верхний блик и мягкую тень.
-- Активный/играющий трек: `bg-pink-500/15 border-pink-500/30`.
+- Активный/играющий трек: `bg-accent/10 border-accent/20` + `text-accent` на названии.
 - Исключение: полноэкранный `/player/[id]` — сидит на анимированном розово-фиолетовом градиенте с белыми элементами управления.
 
 **Соглашения по типографике** (по референсу SoundCloud):
