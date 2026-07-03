@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Space_Grotesk } from "next/font/google";
 import { Home, Library, Disc, Heart, Search } from "lucide-react";
 import MiniPlayer from "@/app/components/MiniPlayer";
 import BottomNav from "@/app/components/BottomNav";
 import SidebarAccount from "@/app/components/SidebarAccount";
+
+const logoFont = Space_Grotesk({ subsets: ["latin"], weight: "700" });
 
 const navItems = [
   { name: "Поиск", href: "/search", icon: Search },
@@ -42,10 +45,10 @@ export default function MainLayout({
     <div className="flex min-h-screen bg-bg-base">
       {/* Сайдбар — только десктоп */}
       <aside className="hidden md:flex fixed left-0 top-0 h-full w-72 p-6 border-r border-white/10 bg-bg-base flex-col">
-        {/* Логотип Party */}
+        {/* Логотип DEMO */}
         <Link href="/" className="block px-2 mb-10 group">
-          <span className="text-5xl font-black tracking-wide text-accent transition-all duration-500 group-hover:scale-105 group-hover:text-accent-hover">
-            Party
+          <span className={`${logoFont.className} text-5xl font-bold tracking-wide text-accent transition-all duration-500 group-hover:scale-105 group-hover:text-accent-hover`}>
+            DEMO
           </span>
           <p className="text-[11px] font-medium text-pink-400/80 tracking-wider mt-1 ml-0.5">
             music streaming
