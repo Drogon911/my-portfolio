@@ -201,7 +201,10 @@ export default function PlayerPage() {
       <BackButton onClick={handleBack} />
 
       <div className="relative z-10 flex-1 flex flex-col">
-        <div className="relative flex-1 flex flex-col items-center justify-center p-6">
+        <div className="flex-1 flex flex-col items-center justify-center p-6">
+          {/* Обёртка контента: обложка+название+артист центрируются как единый блок,
+              сердечко привязано к её низу (см. ниже) и потому их не смещает. */}
+          <div className="relative flex flex-col items-center">
           <AnimatePresence mode="wait">
             {isMobile ? (
               <motion.div
@@ -220,7 +223,7 @@ export default function PlayerPage() {
                 className="cursor-grab active:cursor-grabbing will-change-transform"
               >
                 <div
-                  className={`relative w-64 h-64 md:w-80 md:h-80 rounded-2xl overflow-hidden bg-white/10 transition-all duration-700 ${
+                  className={`relative w-64 h-64 md:w-80 md:h-80 [@media(max-height:770px)]:w-56 [@media(max-height:770px)]:h-56 [@media(max-height:700px)]:w-48 [@media(max-height:700px)]:h-48 rounded-2xl overflow-hidden bg-white/10 transition-all duration-700 ${
                     isPlaying
                       ? "shadow-[0_0_60px_rgba(219,39,119,0.6)] scale-105"
                       : "shadow-2xl"
@@ -245,7 +248,7 @@ export default function PlayerPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.2 }}
-                className={`relative w-64 h-64 md:w-80 md:h-80 rounded-2xl overflow-hidden bg-white/10 will-change-transform transition-all duration-700 ${
+                className={`relative w-64 h-64 md:w-80 md:h-80 [@media(max-height:770px)]:w-56 [@media(max-height:770px)]:h-56 [@media(max-height:700px)]:w-48 [@media(max-height:700px)]:h-48 rounded-2xl overflow-hidden bg-white/10 will-change-transform transition-all duration-700 ${
                   isPlaying
                     ? "shadow-[0_0_60px_rgba(219,39,119,0.6)] scale-105"
                     : "shadow-2xl"
@@ -272,7 +275,7 @@ export default function PlayerPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.15 }}
-              className="text-3xl md:text-4xl font-bold text-white mt-8 text-center drop-shadow-lg"
+              className="text-3xl md:text-4xl font-bold text-white mt-8 [@media(max-height:770px)]:mt-4 text-center drop-shadow-lg"
             >
               {currentTrack.title}
             </motion.h1>
@@ -280,16 +283,19 @@ export default function PlayerPage() {
           <p className="text-pink-100 mt-2 text-center drop-shadow">
             {currentTrack.artist}
           </p>
-          {/* Избранное — absolute внизу по центру верхней зоны: вне потока,
-              поэтому обложка и название остаются строго на своих местах. */}
-          <div className="absolute bottom-20 left-1/2 -translate-x-1/2">
+          {/* Избранное — привязано к низу блока с названием (top-full):
+              всегда под артистом на любом экране, обложку/название не смещает.
+              На низких экранах (iPhone SE и т.п. — брейкпоинт по ВЫСОТЕ, не ширине)
+              уменьшаем кнопку и отступ, иначе она упирается в нижнюю панель. */}
+          <div className="absolute top-full mt-6 [@media(max-height:770px)]:mt-3 [@media(max-height:700px)]:mt-2 left-1/2 -translate-x-1/2">
             <FavoriteButton
               trackId={currentTrack.id}
               size={28}
-              className="w-14 h-14 bg-white/15 hover:bg-white/25 shadow-md"
+              className="w-14 h-14 [@media(max-height:700px)]:w-11 [@media(max-height:700px)]:h-11 bg-white/15 hover:bg-white/25 shadow-md"
               activeClass="fill-white text-white"
               idleClass="text-white/80 hover:text-white transition-colors"
             />
+          </div>
           </div>
         </div>
 
