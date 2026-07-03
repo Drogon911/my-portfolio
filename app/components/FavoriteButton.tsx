@@ -4,7 +4,7 @@ import { memo } from "react";
 import { Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/contexts/AuthContext";
-import { useFavorites } from "@/app/contexts/FavoritesContext";
+import { useIsFavorite, useFavoritesActions } from "@/app/contexts/FavoritesContext";
 
 // Сердечко добавления в избранное. Гость → уводим на вход (/account).
 // Залогинен → оптимистичный toggle через контекст.
@@ -23,9 +23,9 @@ function FavoriteButton({
   idleClass?: string;
 }) {
   const { user } = useAuth();
-  const { isFavorite, toggle } = useFavorites();
+  const active = useIsFavorite(trackId);
+  const { toggle } = useFavoritesActions();
   const router = useRouter();
-  const active = isFavorite(trackId);
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // не запускать проигрывание при клике по строке трека
